@@ -1,0 +1,15 @@
+{
+    "name": "hexlet/code",
+    "authors": [
+        {
+            "name": "Svetlana Makarova",
+            "email": "CBETA-MAKAPOBA@yandex.ru"
+        }
+    ],
+    "require": {
+        "docopt/docopt": "^1.0"
+    },
+    "bin": [
+        "bin/gendiff"
+    ]
+}
