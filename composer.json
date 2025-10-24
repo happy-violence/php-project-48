@@ -1,5 +1,8 @@
 {
     "name": "hexlet/code",
+    "description": "program for getting differences between 2 files",
+    "type": "project",
+    "license": "MIT",
     "authors": [
         {
             "name": "Svetlana Makarova",
@@ -11,5 +14,10 @@
     },
     "bin": [
         "bin/gendiff"
-    ]
+    ],
+    "autoload": {
+        "files": [
+            "parser.php"
+        ]
+    }
 }

@@ -3,6 +3,8 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use function Parser\parse;
+
 $doc = <<<DOC
 Generate diff
 
@@ -19,4 +21,7 @@ Options:
 DOC;
 
 $args = Docopt::handle($doc, ['version'=>'0.1.0']);
-var_dump($args);
+$data1 = parse(__DIR__ . '/../' . $args['<firstFile>']);
+$data2 = parse(__DIR__ . '/../' . $args['<secondFile>']);
+print_r($data1);
+print_r($data2);
