@@ -10,14 +10,16 @@
         }
     ],
     "require": {
-        "docopt/docopt": "^1.0"
+        "docopt/docopt": "^1.0",
+        "funct/funct": "^1.6"
     },
     "bin": [
         "bin/gendiff"
     ],
     "autoload": {
         "files": [
-            "parser.php"
+            "src/parser.php",
+            "src/differ.php"
         ]
     }
 }
