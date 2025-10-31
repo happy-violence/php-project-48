@@ -22,7 +22,8 @@ Options:
 DOC;
 
 $args = Docopt::handle($doc, ['version'=>'0.1.0']);
-$data1 = parse(__DIR__ . '/../' . $args['<firstFile>']);
-$data2 = parse(__DIR__ . '/../' . $args['<secondFile>']);
+$data1 = parse(__DIR__ . '/../tests/fixtures/' . $args['<firstFile>']);
+$data2 = parse(__DIR__ . '/../tests/fixtures/' . $args['<secondFile>']);
 
 print_r(genDiff($data1, $data2));
+//print_r($data1);
