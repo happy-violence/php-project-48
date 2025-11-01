@@ -4,8 +4,25 @@ namespace App\Differ;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-function genDiff(array $data1, array $data2): string
+function readFile(string $filePath): string
 {
+    //todo: не забыть обрабатывать результат в случае ошибки (если файл не существует например)
+    return file_get_contents($filePath);
+}
+
+function parse(string $filePath): array
+{
+    $fileContent = readFile($filePath);
+    $array = json_decode($fileContent, true);
+    ksort($array);
+    return $array;
+}
+
+function genDiff(string $filePath1, string $filePath2): string
+{
+    $data1 = parse($filePath1);
+    $data2 = parse($filePath2);
+
     $result = [];
     foreach ($data1 as $key1 => $value1) {
         if (array_key_exists($key1, $data2)) {
