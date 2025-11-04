@@ -4,6 +4,11 @@ namespace App\Differ;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+function getAbsolutePath(string $path): string
+{
+    return (str_starts_with($path, '/') ? $path : __DIR__ . '/../' . $path);
+}
+
 function readFile(string $filePath): string
 {
     //todo: не забыть обрабатывать результат в случае ошибки (если файл не существует например)
@@ -47,5 +52,5 @@ function genDiff(string $filePath1, string $filePath2): string
         }
     }
 
-    return json_encode($result, JSON_PRETTY_PRINT);
+    return str_replace('"', '', json_encode($result, JSON_PRETTY_PRINT));
 }
