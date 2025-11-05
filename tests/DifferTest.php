@@ -14,8 +14,6 @@ class DifferTest extends TestCase
         // Сначала идет ожидаемое значение (expected)
         // И только потом актуальное (actual)
 
-        //$testFile1 = file_get_contents(__DIR__ . "/../fixtures/file1.json");
-        //$testFile2 = file_get_contents(__DIR__ . "/../fixtures/file2.json");
         $array = [
             "- follow" => false,
             "host" => "hexlet.io",

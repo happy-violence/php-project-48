@@ -12,7 +12,9 @@ function getAbsolutePath(string $path): string
 function readFile(string $filePath): string
 {
     //todo: не забыть обрабатывать результат в случае ошибки (если файл не существует например)
-    return file_get_contents($filePath);
+    return is_readable($filePath)
+        ? file_get_contents($filePath)
+        : throw new \Exception("'{$filePath}' is not readable");
 }
 
 function parse(string $filePath): array
