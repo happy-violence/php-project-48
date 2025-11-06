@@ -11,7 +11,6 @@ function getAbsolutePath(string $path): string
 
 function readFile(string $filePath): string
 {
-    //todo: не забыть обрабатывать результат в случае ошибки (если файл не существует например)
     return is_readable($filePath)
         ? file_get_contents($filePath)
         : throw new \Exception("'{$filePath}' is not readable");
@@ -34,7 +33,8 @@ function genDiff(string $filePath1, string $filePath2): string
     foreach ($data1 as $key1 => $value1) {
         if (array_key_exists($key1, $data2)) {
             if ($value1 === $data2[$key1]) {
-                $result[$key1] = $value1;
+                $newKey1 = "  {$key1}";
+                $result[$newKey1] = $value1;
             } else {
                 $newKey1 = "- {$key1}";
                 $newKey2 = "+ {$key1}";
