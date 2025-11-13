@@ -27,16 +27,26 @@ class DifferTest extends TestCase
             "    - timeout: 50\n" .
         "}";
 
-        $filePath1 = __DIR__ . "/fixtures/file1.json";
-        $filePath2 = __DIR__ . "/fixtures/file2.json";
-        $filePath3 = __DIR__ . "/fixtures/emptyFile1.json";
-        $filePath4 = __DIR__ . "/fixtures/fileee.json";
+        $jsonFilePath1 = __DIR__ . "/fixtures/file1.json";
+        $jsonFilePath2 = __DIR__ . "/fixtures/file2.json";
+        $jsonFilePath3 = __DIR__ . "/fixtures/emptyFile1.json";
+        $jsonFilePath4 = __DIR__ . "/fixtures/fileee.json";
+
+        $ymlFilePath1 = __DIR__ . "/fixtures/file1.yml";
+        $ymlFilePath2 = __DIR__ . "/fixtures/file2.yaml";
+        $ymlFilePath3 = __DIR__ . "/fixtures/emptyFile3.yml";
+        $ymlFilePath4 = __DIR__ . "/fixtures/filedfw.yml";
 
         // Сначала идет ожидаемое значение (expected)
         // И только потом актуальное (actual)
-        $this->assertEquals($correctString2, genDiff($filePath1, $filePath3));
-        $this->expectExceptionMessage("'{$filePath4}' is not readable");
-        genDiff($filePath1, $filePath4);
-        $this->assertEquals($correctString1, genDiff($filePath1, $filePath2));
+        $this->assertEquals($correctString2, genDiff($jsonFilePath1, $jsonFilePath3));
+        $this->expectExceptionMessage("'{$jsonFilePath4}' is not readable");
+        genDiff($jsonFilePath1, $jsonFilePath4);
+        $this->assertEquals($correctString1, genDiff($jsonFilePath1, $jsonFilePath2));
+
+        $this->assertEquals($correctString2, genDiff($ymlFilePath1, $ymlFilePath3));
+        $this->expectExceptionMessage("'{$ymlFilePath4}' is not readable");
+        genDiff($ymlFilePath1, $ymlFilePath4);
+        $this->assertEquals($correctString1, genDiff($ymlFilePath1, $ymlFilePath2));
     }
 }

@@ -11,14 +11,17 @@
     ],
     "require": {
         "docopt/docopt": "^1.0",
-        "funct/funct": "^1.6"
+        "funct/funct": "^1.6",
+        "symfony/yaml": "^7.3"
     },
     "bin": [
         "bin/gendiff"
     ],
     "autoload": {
         "files": [
-            "src/differ.php"
+            "src/differ.php",
+            "src/parser.php",
+            "src/stringify.php"
         ]
     },
     "autoload-dev": {

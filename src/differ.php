@@ -4,32 +4,55 @@ namespace App\Differ;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Exception\ParseException;
+use function App\Parsers\parseJson;
+use function App\Parsers\parseYaml;
+use Funct\Collection;
+
 function getAbsolutePath(string $path): string
 {
     return (str_starts_with($path, '/') ? $path : __DIR__ . '/../' . $path);
 }
 
-function readFile(string $filePath): string
+function getExtension(string $path): string
 {
-    return is_readable($filePath)
-        ? file_get_contents($filePath)
-        : throw new \Exception("'{$filePath}' is not readable");
+    $pathInfo = pathinfo($path);
+    return $pathInfo['extension'];
 }
 
-function parse(string $filePath): array
+function sortByKeys(array $collection): array
 {
-    $fileContent = readFile($filePath);
-    $array = json_decode($fileContent, true);
-    ksort($array);
-    return $array;
+    return Collection\sortBy($collection, function ($value) use ($key) { return asort($key); });
 }
 
-function genDiff(string $filePath1, string $filePath2): string
+function genDiff(string $filePath1, string $filePath2): array
 {
-    $data1 = parse($filePath1);
-    $data2 = parse($filePath2);
+    //todo: исправить возвращаемое значение с array на string
+    $fileContent1 = readFile($filePath1);
+    //var_dump($fileContent1);die;
+    $fileContent2 = readFile($filePath2);
 
-    $result = [];
+    $data1 = null;
+    $data2 = null;
+
+    if (getExtension($filePath1) === 'json') {
+        $data1 = parseJson($fileContent1);
+    }
+
+    if (getExtension($filePath1) === 'yaml' || getExtension($filePath1) === 'yml') {
+        $data1 = parseYaml($fileContent1);
+    }
+
+    if (getExtension($filePath2) === 'json') {
+        $data2 = parseJson($fileContent2);
+    }
+
+    if (getExtension($filePath2) === 'yaml' || getExtension($filePath2) === 'yml') {
+        $data2 = parseYaml($fileContent2);
+    }
+
+    /*$result = [];
     foreach ($data1 as $key1 => $value1) {
         if (array_key_exists($key1, $data2)) {
             if ($value1 === $data2[$key1]) {
@@ -54,5 +77,10 @@ function genDiff(string $filePath1, string $filePath2): string
         }
     }
 
-    return str_replace('"', '', json_encode($result, JSON_PRETTY_PRINT));
+    return str_replace('"', '', json_encode($result, JSON_PRETTY_PRINT));*/
+
+    $keys1 = (get_object_vars($data1));
+    $keys2 = (get_object_vars($data2));
+    $keys = array_merge($keys1, $keys2);
+
 }
