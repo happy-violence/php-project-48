@@ -31,10 +31,8 @@ $path2 = $args['<secondFile>'];
     $value = genDiff(getAbsolutePath($path1), getAbsolutePath($path2));
 } catch (Throwable $exception) {
     // Этот блок выполняется только в одном случае, если в блоке try было выброшено исключение
-    $value = $exception->getMessage();
-}
+    $value = $exception->getMessage();fileContent1
+}*/
 
-print_r($value);*/
 $result = genDiff(getAbsolutePath($path1), getAbsolutePath($path2));
-
-//var_dump(parseYaml($path1));
+print_r($result);

@@ -5,7 +5,6 @@ namespace App\Parsers;
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Symfony\Component\Yaml\Yaml;
-use Symfony\Component\Yaml\Exception\ParseException;
 
 function readFile(string $filePath): string
 {
@@ -17,8 +16,6 @@ function readFile(string $filePath): string
 function parseJson(string $fileContent): object
 {
     return json_decode($fileContent);
-    //ksort($array);
-    //return $array;
 }
 
 function parseYaml(string $fileContent): object

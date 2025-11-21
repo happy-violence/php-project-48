@@ -4,10 +4,9 @@ namespace App\Differ;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Symfony\Component\Yaml\Yaml;
-use Symfony\Component\Yaml\Exception\ParseException;
 use function App\Parsers\parseJson;
 use function App\Parsers\parseYaml;
+use function App\Parsers\readFile;
 use Funct\Collection;
 
 function getAbsolutePath(string $path): string
@@ -21,16 +20,10 @@ function getExtension(string $path): string
     return $pathInfo['extension'];
 }
 
-function sortByKeys(array $collection): array
-{
-    return Collection\sortBy($collection, function ($value) use ($key) { return asort($key); });
-}
-
 function genDiff(string $filePath1, string $filePath2): array
 {
     //todo: исправить возвращаемое значение с array на string
     $fileContent1 = readFile($filePath1);
-    //var_dump($fileContent1);die;
     $fileContent2 = readFile($filePath2);
 
     $data1 = null;
@@ -79,8 +72,43 @@ function genDiff(string $filePath1, string $filePath2): array
 
     return str_replace('"', '', json_encode($result, JSON_PRETTY_PRINT));*/
 
-    $keys1 = (get_object_vars($data1));
-    $keys2 = (get_object_vars($data2));
-    $keys = array_merge($keys1, $keys2);
+    $keysAndValues1 = (get_object_vars($data1));
+    $keysAndValues2 = (get_object_vars($data2));
+    $keys1 = array_keys($keysAndValues1);
+    $keys2 = array_keys($keysAndValues2);
+    $keys = array_unique(array_merge($keys1, $keys2));
+    sort($keys);
+    $sortedKeys = Collection\sortBy($keys, function ($key) { return $key; });
 
+    $result = array_map(function ($key) use ($keysAndValues1, $keysAndValues2) {
+        $result = [];
+        $sign1 = '  ';
+        $sign2 = '  ';
+        $sign = '  ';
+
+        if (array_key_exists($key, $keysAndValues1) && array_key_exists($key, $keysAndValues2)) {
+            if ($keysAndValues1[$key] !== $keysAndValues2[$key]) {
+                $sign1 = '- ';
+                $result[$sign1 . $key] = $keysAndValues1[$key];
+                $sign2 = '+ ';
+                $result[$sign2 . $key] = $keysAndValues2[$key];
+            } else {
+                $result[$sign . $key] = $keysAndValues1[$key];
+            }
+        }
+
+        if (!array_key_exists($key, $keysAndValues2)) {
+            $sign1 = '- ';
+            $result[$sign1 . $key] = $keysAndValues1[$key];
+        }
+
+        if (!array_key_exists($key, $keysAndValues1)) {
+            $sign2 = '+ ';
+            $result[$sign2 . $key] = $keysAndValues2[$key];
+        }
+
+        return $result;
+    }, $sortedKeys);
+
+    return $result;
 }
