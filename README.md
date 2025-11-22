@@ -7,4 +7,5 @@
 ### asciinema for the 4th step:
 https://asciinema.org/a/xsM8790xshYtb897pRsQ6wUSJ
 
-
+### asciinema for the 6th step:
+https://asciinema.org/a/mmWtfgDnGiHoqHNgdK5w0jLE0
