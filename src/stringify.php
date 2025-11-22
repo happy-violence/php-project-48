@@ -20,7 +20,11 @@ function withoutQuotes(string $item): string
     }
     return (string)$item;
 }*/
-function stringify($item)
-{
 
+function stringify(mixed $item): string
+{
+    if (gettype($item) === 'boolean') {
+        return withoutQuotes($item ? 'true' : 'false');
+    }
+    return withoutQuotes($item);
 }
