@@ -11,21 +11,11 @@ class DifferTest extends TestCase
 {
     public function testGenDiff(): void
     {
-        $correctString1 = "{\n" .
-            "    - follow => false,\n" .
-            "      host => hexlet.io,\n" .
-            "    - proxy => 123.234.53.22,\n" .
-            "    - timeout => 50,\n" .
-            "    + timeout => 20,\n" .
-            "    + verbose => true\n" .
-        "}";
+        $correctString1 = \App\Parsers\readFile('/home/svetlana/projects/hexlet/php-project-48/tests/fixtures/test1.txt');
 
-        $correctString2 = "{\n" .
-            "    - follow: false,\n" .
-            "    - host: hexlet.io,\n" .
-            "    - proxy: 123.234.53.22,\n" .
-            "    - timeout: 50\n" .
-        "}";
+        $correctString2 = \App\Parsers\readFile('/home/svetlana/projects/hexlet/php-project-48/tests/fixtures/test2.txt');
+
+        $correctString3 = \App\Parsers\readFile('/home/svetlana/projects/hexlet/php-project-48/tests/fixtures/positiveTestResult');
 
         $jsonFilePath1 = __DIR__ . "/fixtures/file1.json";
         $jsonFilePath2 = __DIR__ . "/fixtures/file2.json";
@@ -39,10 +29,10 @@ class DifferTest extends TestCase
 
         // Сначала идет ожидаемое значение (expected)
         // И только потом актуальное (actual)
-        $this->assertEquals($correctString2, genDiff($jsonFilePath1, $jsonFilePath3));
+        $this->assertEquals($correctString1, genDiff($jsonFilePath1, $jsonFilePath3));
         $this->expectExceptionMessage("'{$jsonFilePath4}' is not readable");
         genDiff($jsonFilePath1, $jsonFilePath4);
-        $this->assertEquals($correctString1, genDiff($jsonFilePath1, $jsonFilePath2));
+        $this->assertEquals($correctString3, genDiff($jsonFilePath1, $jsonFilePath2));
 
         $this->assertEquals($correctString2, genDiff($ymlFilePath1, $ymlFilePath3));
         $this->expectExceptionMessage("'{$ymlFilePath4}' is not readable");
