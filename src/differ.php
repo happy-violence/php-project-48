@@ -4,18 +4,19 @@ namespace App\Differ;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use stdClass;
 use function App\Parsers\parseJson;
 use function App\Parsers\parseYaml;
 use function App\Parsers\readFile;
 use Funct\Collection;
-use function App\Stringify\stringify;
+use function App\Render\render;
 
 function getAbsolutePath(string $path): string
 {
     return (str_starts_with($path, '/') ? $path : __DIR__ . '/../' . $path);
 }
 
-function getExtension(string $path): string
+function getExtension(string $path)
 {
     $pathInfo = pathinfo($path);
     return $pathInfo['extension'];
@@ -45,48 +46,75 @@ function genDiff(string $filePath1, string $filePath2): string
         $data2 = parseYaml($fileContent2);
     }
 
-    $keysAndValues1 = get_object_vars($data1);
-    $data1 = array_map(fn($value) => stringify($value), $keysAndValues1);
+    $result = getInnerTree($data1, $data2);
+    return render($result);
+}
 
-    $keysAndValues2 = get_object_vars($data2);
-    $data2 = array_map(fn($value) => stringify($value), $keysAndValues2);
+function getInnerTree($data1, $data2)
+{
+    $data1 = get_object_vars($data1);
+    $data2 = get_object_vars($data2);
 
     $keys1 = array_keys($data1);
     $keys2 = array_keys($data2);
-    $keys = array_unique(array_merge($keys1, $keys2));
-    $sortedKeys = Collection\sortBy($keys, function ($key) { return $key; });
+    $commonKeys = array_unique(array_merge($keys1, $keys2));
+    $sortedKeys = Collection\sortBy($commonKeys, function ($key) {
+        return $key;
+    });
 
-    $result = array_reduce($sortedKeys, function ($result, $key) use ($data1, $data2) {
-        $sign = '  ';
-
+    $innerTree = array_reduce($sortedKeys, function ($innerTree, $key) use ($data1, $data2) {
         if (array_key_exists($key, $data1) && array_key_exists($key, $data2)) {
-            if ($data1[$key] !== $data2[$key]) {
-                $sign1 = '- ';
-                $result[$sign1 . $key] = $data1[$key];
-                $sign2 = '+ ';
-                $result[$sign2 . $key] = $data2[$key];
+            if (!is_object($data1[$key]) || !is_object($data2[$key])) {
+                if ($data1[$key] !== $data2[$key]) {
+                    if (is_object($data1[$key])) {
+                        $oldValue = getInnerTree($data1[$key], $data1[$key]);
+                    } else {
+                        $oldValue = $data1[$key];
+                    }
+
+                    if (is_object($data2[$key])) {
+                        $newValue = getInnerTree($data2[$key], $data2[$key]);
+                    } else {
+                        $newValue = $data2[$key];
+                    }
+
+                    $status = 'changed';
+                    $innerTree[] = ['key' => $key, 'oldValue' => $oldValue, 'newValue' => $newValue, 'status' => $status];
+                } else {
+                    $value = $data1[$key];
+                    $status = 'unchanged';
+                    $innerTree[] = ['key' => $key, 'value' => $value, 'status' => $status];
+                }
             } else {
-                $result[$sign . $key] = $data1[$key];
+                $children = getInnerTree($data1[$key], $data2[$key]);
+                $status = 'nested';
+                $innerTree[] = ['key' => $key, 'children' => $children, 'status' => $status];
             }
         }
 
         if (!array_key_exists($key, $data2)) {
-            $sign1 = '- ';
-            $result[$sign1 . $key] = $data1[$key];
+            if (is_object($data1[$key])) {
+                $oldValue = getInnerTree($data1[$key], $data1[$key]);
+            } else {
+                $oldValue = $data1[$key];
+            }
+
+            $status = 'deleted';
+            $innerTree[] = ['key' => $key, 'oldValue' => $oldValue, 'status' => $status];
         }
 
         if (!array_key_exists($key, $data1)) {
-            $sign2 = '+ ';
-            $result[$sign2 . $key] = $data2[$key];
-        }
+            if (is_object($data2[$key])) {
+                $newValue = getInnerTree($data2[$key], $data2[$key]);
+            } else {
+                $newValue = $data2[$key];
+            }
 
-        return $result;
+            $status = 'added';
+            $innerTree[] = ['key' => $key, 'newValue' => $newValue, 'status' => $status];
+        }
+        return $innerTree;
     }, []);
 
-    //return $result;
-    $stringResult = '';
-    foreach ($result as $key => $value) {
-        $stringResult = $stringResult . $key . ': ' . $value . "\n";
-    }
-    return '{'. "\n" . $stringResult . '}';
+    return $innerTree;
 }

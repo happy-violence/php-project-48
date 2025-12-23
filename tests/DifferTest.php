@@ -15,8 +15,7 @@ class DifferTest extends TestCase
 
         $correctString2 = \App\Parsers\readFile('/home/svetlana/projects/hexlet/php-project-48/tests/fixtures/test2.txt');
 
-        $correctString3 = \App\Parsers\readFile('/home/svetlana/projects/hexlet/php-project-48/tests/fixtures/positiveTestResult');
-
+        $correctString3 = \App\Parsers\readFile('/home/svetlana/projects/hexlet/php-project-48/tests/fixtures/positiveTestResult.txt');
         $jsonFilePath1 = __DIR__ . "/fixtures/file1.json";
         $jsonFilePath2 = __DIR__ . "/fixtures/file2.json";
         $jsonFilePath3 = __DIR__ . "/fixtures/emptyFile1.json";

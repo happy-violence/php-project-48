@@ -3,28 +3,39 @@
 namespace App\Stringify;
 
 require_once __DIR__ . '/../vendor/autoload.php';
-function withoutQuotes(string $item): string
-{
-    return str_replace('"', '', $item);
-}
-
-/*function stringify(mixed $item, string $replacer = ' ', int $spacesCount = 1)
-{
-    $replacers = str_repeat($replacer, $spacesCount);
-    if (is_array($item)) {
-        $result = [];
-        foreach ($item as $key => $value) {
-            $result[$replacers . withoutQuotes($key)] = withoutQuotes($value);
-        }
-        return $result;
-    }
-    return (string)$item;
-}*/
 
 function stringify(mixed $item): string
 {
     if (gettype($item) === 'boolean') {
-        return withoutQuotes($item ? 'true' : 'false');
+        return $item ? 'true' : 'false';
     }
-    return withoutQuotes($item);
+
+    if (gettype($item) === 'integer') {
+        return $item;
+    }
+
+    if (gettype($item) === 'string') {
+        return $item;
+    }
+
+    if ($item === null) {
+        return 'null';
+    }
+
+//    if (gettype($item) === 'array') {
+//        //var_dump($item);die;
+//        return 'fff';
+//    }
+    /*if (gettype($item) === 'object') {
+        $result = [];
+        foreach ($item as $key => $value) {
+            $spacesCount = 4;
+            $replacer = ' ';
+            $indent = str_repeat($replacer, $depth * $spacesCount - $specialSymbol = 0);
+            $result[] = "{$indent}  {$key}: " . stringify($value, $depth + 1);
+            return "{\n" . implode("\n", $result) . "\n{$indent}}";
+        }
+    }*/
+
+    return $item;
 }
