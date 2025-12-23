@@ -9,12 +9,10 @@ use function App\Stringify\stringify;
 function isNestedStructure($item): bool
 {
     return is_array($item);
-    //&&
-        //array_key_exists('status', $item) &&
-        //(array_key_exists('value', $item) || array_key_exists('newValue', $item) || array_key_exists('oldValue', $item));
+    //todo добавить проверки на то, что во вложенных массивах есть признаки (ключ статус, ключи value или newValue...
 }
 
-function getFormattedString(string $sign, string $key, mixed $value, int $depth, string $indent): string
+function getFormattedString(string $key, mixed $value, string $sign, int $depth, string $indent): string
 {
     if (isNestedStructure($value)) {
         $value = render($value, $depth + 1);
@@ -28,61 +26,28 @@ function render(array $comparisons, int $depth = 1): string
     $result = [];
     $spacesCount = 4;
     $replacer = ' ';
-    $indent = str_repeat($replacer, $depth * $spacesCount - $specialSymbol = 2);
+    $specialSymbol = 2;
+    $indent = str_repeat($replacer, $depth * $spacesCount - $specialSymbol);
 
     foreach ($comparisons as $comparison) {
         if ($comparison['status'] === 'nested') {
             $result[] = "{$indent}  {$comparison['key']}: " . render($comparison['children'], $depth + 1);
         } else {
-            $specialSymbol = 2;
-            $indent = str_repeat($replacer, $depth * $spacesCount - $specialSymbol);
-
             if ($comparison['status'] === 'changed') {
-                if (isNestedStructure($comparison['oldValue'])) {
-                    $oldValue = render($comparison['oldValue'], $depth + 1);
-                } else {
-                    $oldValue = $comparison['oldValue'];
-                }
-
-                $result[] = "{$indent}- {$comparison['key']}: " . stringify($oldValue);
-
-                if (isNestedStructure($comparison['newValue'])) {
-                    $newValue = render($comparison['newValue'], $depth + 1);
-                } else {
-                    $newValue = $comparison['newValue'];
-                }
-
-                $result[] = "{$indent}+ {$comparison['key']}: " . stringify($newValue);
+                $result[] = getFormattedString($comparison['key'], $comparison['oldValue'], '-',$depth, $indent);
+                $result[] = getFormattedString($comparison['key'], $comparison['newValue'], '+',$depth, $indent);
             }
 
             if ($comparison['status'] === 'unchanged') {
-                if (isNestedStructure($comparison['value'])) {
-                    $value = render($comparison['value'], $depth + 1);
-                } else {
-                    $value = $comparison['value'];
-                }
-
-                $result[] = "{$indent}  {$comparison['key']}: " . stringify($value);
+                $result[] = getFormattedString($comparison['key'], $comparison['value'], ' ',$depth, $indent);
             }
 
             if ($comparison['status'] === 'deleted') {
-                if (isNestedStructure($comparison['oldValue'])) {
-                    $oldValue = render($comparison['oldValue'], $depth + 1);
-                } else {
-                    $oldValue = $comparison['oldValue'];
-                }
-
-                $result[] = "{$indent}- {$comparison['key']}: " . stringify($oldValue);
+                $result[] = getFormattedString($comparison['key'], $comparison['oldValue'], '-',$depth, $indent);
             }
 
             if ($comparison['status'] === 'added') {
-                if (isNestedStructure($comparison['newValue'])) {
-                    $newValue = render($comparison['newValue'], $depth + 1);
-                } else {
-                    $newValue = $comparison['newValue'];
-                }
-
-                $result[] = "{$indent}+ {$comparison['key']}: " . stringify($newValue);
+                $result[] = getFormattedString($comparison['key'], $comparison['newValue'], '+',$depth, $indent);
             }
         }
     }
