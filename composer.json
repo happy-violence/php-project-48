@@ -21,7 +21,8 @@
         "files": [
             "src/differ.php",
             "src/stylish.php",
-            "src/stringify.php"
+            "src/stringify.php",
+            "src/parser.php"
         ]
     },
     "autoload-dev": {
