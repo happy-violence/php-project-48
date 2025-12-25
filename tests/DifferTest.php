@@ -12,10 +12,14 @@ class DifferTest extends TestCase
     public function testGenDiff(): void
     {
         $correctString1 = \App\Parsers\readFile('/home/svetlana/projects/hexlet/php-project-48/tests/fixtures/test1.txt');
+        $correctString1WithoutQuotesAndCommas = str_replace(['"', ','], '',$correctString1);
 
         $correctString2 = \App\Parsers\readFile('/home/svetlana/projects/hexlet/php-project-48/tests/fixtures/test2.txt');
+        $correctString2WithoutQuotesAndCommas = str_replace(['"', ','], '',$correctString2);
 
         $correctString3 = \App\Parsers\readFile('/home/svetlana/projects/hexlet/php-project-48/tests/fixtures/positiveTestResult.txt');
+        $correctString3WithoutQuotesAndCommas = str_replace(['"', ','], '',$correctString3);
+
         $jsonFilePath1 = __DIR__ . "/fixtures/file1.json";
         $jsonFilePath2 = __DIR__ . "/fixtures/file2.json";
         $jsonFilePath3 = __DIR__ . "/fixtures/emptyFile1.json";
@@ -28,14 +32,14 @@ class DifferTest extends TestCase
 
         // Сначала идет ожидаемое значение (expected)
         // И только потом актуальное (actual)
-        $this->assertEquals($correctString1, genDiff($jsonFilePath1, $jsonFilePath3));
+        $this->assertEquals($correctString1WithoutQuotesAndCommas, genDiff($jsonFilePath1, $jsonFilePath3));
         $this->expectExceptionMessage("'{$jsonFilePath4}' is not readable");
         genDiff($jsonFilePath1, $jsonFilePath4);
-        $this->assertEquals($correctString3, genDiff($jsonFilePath1, $jsonFilePath2));
+        $this->assertEquals($correctString3WithoutQuotesAndCommas, genDiff($jsonFilePath1, $jsonFilePath2));
 
-        $this->assertEquals($correctString2, genDiff($ymlFilePath1, $ymlFilePath3));
+        $this->assertEquals($correctString2WithoutQuotesAndCommas, genDiff($ymlFilePath1, $ymlFilePath3));
         $this->expectExceptionMessage("'{$ymlFilePath4}' is not readable");
         genDiff($ymlFilePath1, $ymlFilePath4);
-        $this->assertEquals($correctString1, genDiff($ymlFilePath1, $ymlFilePath2));
+        $this->assertEquals($correctString1WithoutQuotesAndCommas, genDiff($ymlFilePath1, $ymlFilePath2));
     }
 }

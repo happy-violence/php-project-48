@@ -47,6 +47,7 @@ function genDiff(string $filePath1, string $filePath2): string
     }
 
     $result = getInnerTree($data1, $data2);
+    //var_dump($result[0]['status']);die;
     return render($result);
 }
 

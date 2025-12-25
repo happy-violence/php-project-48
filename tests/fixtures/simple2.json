@@ -5,6 +5,6 @@
     }
   },
   "uytr" : {
-    "gggg" : "bbbb"
+    "gggg" : ["bbbb", "aaaa"]
   }
 }
