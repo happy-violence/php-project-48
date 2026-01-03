@@ -20,6 +20,8 @@ class DifferTest extends TestCase
         $correctString3 = \App\Parsers\readFile('/home/svetlana/projects/hexlet/php-project-48/tests/fixtures/positiveTestResult.txt');
         $correctString3WithoutQuotesAndCommas = str_replace(['"', ','], '',$correctString3);
 
+        $correctString4 = \App\Parsers\readFile('/home/svetlana/projects/hexlet/php-project-48/tests/fixtures/testForPlain.txt');
+
         $jsonFilePath1 = __DIR__ . "/fixtures/file1.json";
         $jsonFilePath2 = __DIR__ . "/fixtures/file2.json";
         $jsonFilePath3 = __DIR__ . "/fixtures/emptyFile1.json";
@@ -41,5 +43,10 @@ class DifferTest extends TestCase
         $this->expectExceptionMessage("'{$ymlFilePath4}' is not readable");
         genDiff($ymlFilePath1, $ymlFilePath4);
         $this->assertEquals($correctString1WithoutQuotesAndCommas, genDiff($ymlFilePath1, $ymlFilePath2));
+
+        $this->assertEquals($correctString4, genDiff($jsonFilePath1, $jsonFilePath2, 'plain'));
+        $this->assertEquals($correctString3WithoutQuotesAndCommas, genDiff($jsonFilePath1, $jsonFilePath2, 'stylish'));
+        $this->expectExceptionMessage("Unknown format. Please choose stylish or plain format");
+        genDiff($jsonFilePath1, $jsonFilePath2, 'abracadabra');
     }
 }

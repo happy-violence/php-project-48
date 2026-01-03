@@ -5,8 +5,6 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use function App\Differ\genDiff;
 use function App\Differ\getAbsolutePath;
-use function App\Parsers\readFile;
-use function App\Parsers\parseYaml;
 
 $doc = <<<DOC
 Generate diff
@@ -23,16 +21,18 @@ Options:
   
 DOC;
 
-$args = Docopt::handle($doc, ['version'=>'0.1.0']);
+$args = Docopt::handle($doc);
 $path1 = $args['<firstFile>'];
 $path2 = $args['<secondFile>'];
+$formatName = $args['--format'];
+//var_dump($args);die;
 
 /*try {
     $value = genDiff(getAbsolutePath($path1), getAbsolutePath($path2));
 } catch (Throwable $exception) {
     // Этот блок выполняется только в одном случае, если в блоке try было выброшено исключение
-    $value = $exception->getMessage();fileContent1
+    $value = $exception->getMessage();
 }*/
 
-$result = genDiff(getAbsolutePath($path1), getAbsolutePath($path2));
-print_r($result);
+$diff = genDiff(getAbsolutePath($path1), getAbsolutePath($path2), $formatName);
+print_r($diff);

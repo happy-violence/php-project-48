@@ -20,9 +20,11 @@
     "autoload": {
         "files": [
             "src/differ.php",
-            "src/stylish.php",
             "src/stringify.php",
-            "src/parser.php"
+            "src/parser.php",
+            "src/formatters/stylish.php",
+            "src/formatters/plain.php",
+            "src/formatters/Formatters.php"
         ]
     },
     "autoload-dev": {
