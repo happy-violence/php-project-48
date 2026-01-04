@@ -26,7 +26,7 @@ function iterateSimpleArray(array $item, int $depth): string
 function getFormattedString(string $key, mixed $value, string $sign, int $depth, string $indent): string
 {
     if (isNestedStructure($value)) {
-        $value = render($value, $depth + 1);
+        $value = renderForStylish($value, $depth + 1);
     } elseif (is_array($value)) {
         $value = iterateSimpleArray($value, $depth + 1, $indent);
     }
@@ -34,7 +34,7 @@ function getFormattedString(string $key, mixed $value, string $sign, int $depth,
     return "{$indent}{$sign} " . stringify($key) . ": " . stringify($value);
 }
 
-function render(array $comparisons, int $depth = 1): string
+function renderForStylish(array $comparisons, int $depth = 1): string
 {
     $result = [];
     $spacesCount = 4;
@@ -44,7 +44,7 @@ function render(array $comparisons, int $depth = 1): string
 
     foreach ($comparisons as $comparison) {
         if ($comparison['status'] === 'nested') {
-            $result[] = "{$indent}  {$comparison['key']}: " . render($comparison['children'], $depth + 1);
+            $result[] = "{$indent}  {$comparison['key']}: " . renderForStylish($comparison['children'], $depth + 1);
         } else {
             if ($comparison['status'] === 'changed') {
                 $result[] = getFormattedString($comparison['key'], $comparison['oldValue'], '-', $depth, $indent);

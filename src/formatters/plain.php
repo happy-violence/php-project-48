@@ -23,7 +23,8 @@ function getValue(mixed $value): string
 
 function renderForPlain(array $comparisons, string $parentKey = ''): string
 {
-    $array = array_reduce($comparisons,
+    $array = array_reduce(
+        $comparisons,
         function ($acc, $comparison) use ($parentKey) {
             if ($comparison['status'] === 'unchanged') {
                 return $acc;
@@ -43,12 +44,14 @@ function renderForPlain(array $comparisons, string $parentKey = ''): string
             $acc[] = match ($comparison['status']) {
                 'added' => "Property '{$childrenKey}' was added with value: " . getValue($comparison['newValue']),
                 'deleted' => "Property '{$childrenKey}' was removed",
-                'changed' => "Property '{$childrenKey}' was updated. From " . getValue($comparison['oldValue']) . " to " . getValue($comparison['newValue']),
+                'changed' => "Property '{$childrenKey}' was updated. From " .
+                    getValue($comparison['oldValue']) . " to " . getValue($comparison['newValue']),
             };
 
             return $acc;
         },
-        []);
+        []
+    );
 
     return implode("\n", $array);
 }

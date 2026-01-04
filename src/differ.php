@@ -2,13 +2,12 @@
 
 namespace App\Differ;
 
-require_once __DIR__ . '/../vendor/autoload.php';
+use Funct\Collection;
 
 use function App\Parsers\parseJson;
 use function App\Parsers\parseYaml;
 use function App\Parsers\readFile;
 use function App\Formatter\chooseFormat;
-use Funct\Collection;
 
 function getAbsolutePath(string $path): string
 {
@@ -46,9 +45,7 @@ function genDiff(string $filePath1, string $filePath2, $formatName = 'stylish'):
     }
 
     $innerTree = getInnerTree($data1, $data2);
-    //var_dump($innerTree);die;
     return chooseFormat($innerTree, $formatName);
-    //var_dump(chooseFormat($innerTree, $formatName));die;
 }
 
 function getInnerTree($data1, $data2)
@@ -80,7 +77,12 @@ function getInnerTree($data1, $data2)
                     }
 
                     $status = 'changed';
-                    $innerTree[] = ['key' => $key, 'oldValue' => $oldValue, 'newValue' => $newValue, 'status' => $status];
+                    $innerTree[] = [
+                        'key' => $key,
+                        'oldValue' => $oldValue,
+                        'newValue' => $newValue,
+                        'status' => $status
+                    ];
                 } else {
                     $value = $data1[$key];
                     $status = 'unchanged';

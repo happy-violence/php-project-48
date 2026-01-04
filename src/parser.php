@@ -2,8 +2,6 @@
 
 namespace App\Parsers;
 
-require_once __DIR__ . '/../vendor/autoload.php';
-
 use Symfony\Component\Yaml\Yaml;
 
 function readFile(string $filePath): string
