@@ -34,6 +34,7 @@
         }
     },
     "require-dev": {
+        "squizlabs/php_codesniffer": "*",
         "phpunit/phpunit": "^12.4"
     }
 }

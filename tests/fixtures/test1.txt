@@ -5,7 +5,7 @@
         setting3: true
         setting6: {
             doge: {
-                wow:
+                wow: 
             }
             key: value
         }

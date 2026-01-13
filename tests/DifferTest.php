@@ -3,34 +3,38 @@
 namespace  Tests;
 
 use PHPUnit\Framework\TestCase;
+
 use function App\Differ\genDiff;
+use function App\Parsers\readFile;
 
 class DifferTest extends TestCase
 {
     public function testGenDiff(): void
     {
-        $correctString1 = \App\Parsers\readFile('/home/svetlana/projects/hexlet/php-project-48/tests/fixtures/test1.txt');
-        $correctString1WithoutQuotesAndCommas = str_replace(['"', ','], '',$correctString1);
+        $fixturesPath = __DIR__ . '/fixtures/';
 
-        $correctString2 = \App\Parsers\readFile('/home/svetlana/projects/hexlet/php-project-48/tests/fixtures/test2.txt');
-        $correctString2WithoutQuotesAndCommas = str_replace(['"', ','], '',$correctString2);
+        $correctString1 = readFile($fixturesPath . 'test1.txt');
+        $correctString1WithoutQuotesAndCommas = str_replace(['"', ','], '', $correctString1);
 
-        $correctString3 = \App\Parsers\readFile('/home/svetlana/projects/hexlet/php-project-48/tests/fixtures/positiveTestResult.txt');
-        $correctString3WithoutQuotesAndCommas = str_replace(['"', ','], '',$correctString3);
+        $correctString2 = readFile($fixturesPath . 'test2.txt');
+        $correctString2WithoutQuotesAndCommas = str_replace(['"', ','], '', $correctString2);
 
-        $correctString4 = \App\Parsers\readFile('/home/svetlana/projects/hexlet/php-project-48/tests/fixtures/testForPlain.txt');
+        $correctString3 = readFile($fixturesPath . 'positiveTestResult.txt');
+        $correctString3WithoutQuotesAndCommas = str_replace(['"', ','], '', $correctString3);
 
-        $correctString5 = \App\Parsers\readFile('/home/svetlana/projects/hexlet/php-project-48/tests/fixtures/testResultForJsonFormat.txt');
+        $correctString4 = readFile($fixturesPath . 'testForPlain.txt');
 
-        $jsonFilePath1 = __DIR__ . "/fixtures/file1.json";
-        $jsonFilePath2 = __DIR__ . "/fixtures/file2.json";
-        $jsonFilePath3 = __DIR__ . "/fixtures/emptyFile1.json";
-        $jsonFilePath4 = __DIR__ . "/fixtures/fileee.json";
+        $correctString5 = readFile($fixturesPath . 'testResultForJsonFormat.txt');
 
-        $ymlFilePath1 = __DIR__ . "/fixtures/file1.yml";
-        $ymlFilePath2 = __DIR__ . "/fixtures/file2.yaml";
-        $ymlFilePath3 = __DIR__ . "/fixtures/emptyFile3.yml";
-        $ymlFilePath4 = __DIR__ . "/fixtures/filedfw.yml";
+        $jsonFilePath1 = $fixturesPath . 'file1.json';
+        $jsonFilePath2 = $fixturesPath . 'file2.json';
+        $jsonFilePath3 = $fixturesPath . 'emptyFile1.json';
+        $jsonFilePath4 = $fixturesPath . 'fileee.json';
+
+        $ymlFilePath1 = $fixturesPath . 'file1.yml';
+        $ymlFilePath2 = $fixturesPath . 'file2.yaml';
+        $ymlFilePath3 = $fixturesPath . 'emptyFile3.yml';
+        $ymlFilePath4 = $fixturesPath . 'filedfw.yml';
 
         $this->assertEquals($correctString1WithoutQuotesAndCommas, genDiff($jsonFilePath1, $jsonFilePath3));
 
