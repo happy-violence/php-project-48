@@ -4,7 +4,6 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use function App\Differ\genDiff;
-use function App\Differ\getAbsolutePath;
 
 $doc = <<<DOC
 Generate diff
@@ -25,6 +24,6 @@ $args = Docopt::handle($doc);
 $path1 = $args['<firstFile>'];
 $path2 = $args['<secondFile>'];
 $formatName = $args['--format'];
-
-$diff = genDiff(getAbsolutePath($path1), getAbsolutePath($path2), $formatName);
+//var_dump($args);die;
+$diff = genDiff($path1, $path2, $formatName);
 print_r($diff);

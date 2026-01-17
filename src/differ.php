@@ -4,10 +4,17 @@ namespace App\Differ;
 
 use Funct\Collection;
 
-use function App\Parsers\parseJson;
-use function App\Parsers\parseYaml;
-use function App\Parsers\readFile;
+use function App\Parsers\parse;
 use function App\Formatter\chooseFormat;
+
+function genDiff(string $file1, string $file2, $formatName = 'stylish'): string
+{
+    $data1 = parse($file1);
+    $data2 = parse($file2);
+
+    $innerTree = buildInnerTree($data1, $data2);
+    return chooseFormat($innerTree, $formatName);
+}
 
 function getAbsolutePath(string $path): string
 {
@@ -20,35 +27,14 @@ function getExtension(string $path)
     return $pathInfo['extension'];
 }
 
-function genDiff(string $filePath1, string $filePath2, $formatName = 'stylish'): string
+function readFile(string $filePath): string
 {
-    $fileContent1 = readFile($filePath1);
-    $fileContent2 = readFile($filePath2);
-
-    $data1 = null;
-    $data2 = null;
-
-    if (getExtension($filePath1) === 'json') {
-        $data1 = parseJson($fileContent1);
-    }
-
-    if (getExtension($filePath1) === 'yaml' || getExtension($filePath1) === 'yml') {
-        $data1 = parseYaml($fileContent1);
-    }
-
-    if (getExtension($filePath2) === 'json') {
-        $data2 = parseJson($fileContent2);
-    }
-
-    if (getExtension($filePath2) === 'yaml' || getExtension($filePath2) === 'yml') {
-        $data2 = parseYaml($fileContent2);
-    }
-
-    $innerTree = getInnerTree($data1, $data2);
-    return chooseFormat($innerTree, $formatName);
+    return is_readable($filePath)
+        ? file_get_contents($filePath)
+        : throw new \Exception("'{$filePath}' is not readable");
 }
 
-function getInnerTree($data1, $data2)
+function buildInnerTree($data1, $data2)
 {
     $data1 = get_object_vars($data1);
     $data2 = get_object_vars($data2);
@@ -60,18 +46,18 @@ function getInnerTree($data1, $data2)
         return $key;
     });
 
-    $innerTree = array_reduce($sortedKeys, function ($innerTree, $key) use ($data1, $data2) {
+    return array_reduce($sortedKeys, function ($innerTree, $key) use ($data1, $data2) {
         if (array_key_exists($key, $data1) && array_key_exists($key, $data2)) {
             if (!is_object($data1[$key]) || !is_object($data2[$key])) {
                 if ($data1[$key] !== $data2[$key]) {
                     if (is_object($data1[$key])) {
-                        $oldValue = getInnerTree($data1[$key], $data1[$key]);
+                        $oldValue = buildInnerTree($data1[$key], $data1[$key]);
                     } else {
                         $oldValue = $data1[$key];
                     }
 
                     if (is_object($data2[$key])) {
-                        $newValue = getInnerTree($data2[$key], $data2[$key]);
+                        $newValue = buildInnerTree($data2[$key], $data2[$key]);
                     } else {
                         $newValue = $data2[$key];
                     }
@@ -89,7 +75,7 @@ function getInnerTree($data1, $data2)
                     $innerTree[] = ['key' => $key, 'value' => $value, 'status' => $status];
                 }
             } else {
-                $children = getInnerTree($data1[$key], $data2[$key]);
+                $children = buildInnerTree($data1[$key], $data2[$key]);
                 $status = 'nested';
                 $innerTree[] = ['key' => $key, 'children' => $children, 'status' => $status];
             }
@@ -97,7 +83,7 @@ function getInnerTree($data1, $data2)
 
         if (!array_key_exists($key, $data2)) {
             if (is_object($data1[$key])) {
-                $oldValue = getInnerTree($data1[$key], $data1[$key]);
+                $oldValue = buildInnerTree($data1[$key], $data1[$key]);
             } else {
                 $oldValue = $data1[$key];
             }
@@ -108,7 +94,7 @@ function getInnerTree($data1, $data2)
 
         if (!array_key_exists($key, $data1)) {
             if (is_object($data2[$key])) {
-                $newValue = getInnerTree($data2[$key], $data2[$key]);
+                $newValue = buildInnerTree($data2[$key], $data2[$key]);
             } else {
                 $newValue = $data2[$key];
             }
@@ -118,6 +104,4 @@ function getInnerTree($data1, $data2)
         }
         return $innerTree;
     }, []);
-
-    return $innerTree;
 }

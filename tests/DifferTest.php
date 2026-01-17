@@ -5,7 +5,7 @@ namespace  Tests;
 use PHPUnit\Framework\TestCase;
 
 use function App\Differ\genDiff;
-use function App\Parsers\readFile;
+//use function App\Differ\readFile;
 
 class DifferTest extends TestCase
 {
@@ -13,18 +13,18 @@ class DifferTest extends TestCase
     {
         $fixturesPath = __DIR__ . '/fixtures/';
 
-        $correctString1 = readFile($fixturesPath . 'test1.txt');
+        $correctString1 = file_get_contents($fixturesPath . 'test1.txt');
         $correctString1WithoutQuotesAndCommas = str_replace(['"', ','], '', $correctString1);
 
-        $correctString2 = readFile($fixturesPath . 'test2.txt');
+        $correctString2 = file_get_contents($fixturesPath . 'test2.txt');
         $correctString2WithoutQuotesAndCommas = str_replace(['"', ','], '', $correctString2);
 
-        $correctString3 = readFile($fixturesPath . 'positiveTestResult.txt');
+        $correctString3 = file_get_contents($fixturesPath . 'positiveTestResult.txt');
         $correctString3WithoutQuotesAndCommas = str_replace(['"', ','], '', $correctString3);
 
-        $correctString4 = readFile($fixturesPath . 'testForPlain.txt');
+        $correctString4 = file_get_contents($fixturesPath . 'testForPlain.txt');
 
-        $correctString5 = readFile($fixturesPath . 'testResultForJsonFormat.txt');
+        $correctString5 = file_get_contents($fixturesPath . 'testResultForJsonFormat.txt');
 
         $jsonFilePath1 = $fixturesPath . 'file1.json';
         $jsonFilePath2 = $fixturesPath . 'file2.json';
@@ -36,17 +36,20 @@ class DifferTest extends TestCase
         $ymlFilePath3 = $fixturesPath . 'emptyFile3.yml';
         $ymlFilePath4 = $fixturesPath . 'filedfw.yml';
 
+        $jpgFilePath1 = $fixturesPath . 'file2.jpg';
+
         $this->assertEquals($correctString1WithoutQuotesAndCommas, genDiff($jsonFilePath1, $jsonFilePath3));
 
         $this->expectExceptionMessage("'{$jsonFilePath4}' is not readable");
         genDiff($jsonFilePath1, $jsonFilePath4);
+        $this->expectExceptionMessage("'{$ymlFilePath4}' is not readable");
+        genDiff($ymlFilePath1, $ymlFilePath4);
+        $this->expectExceptionMessage("File {$jpgFilePath1} not supported. Choose 'json', 'yaml' or 'yml' extension");
+        genDiff($jsonFilePath1, $jpgFilePath1);
 
         $this->assertEquals($correctString3WithoutQuotesAndCommas, genDiff($jsonFilePath1, $jsonFilePath2));
 
         $this->assertEquals($correctString2WithoutQuotesAndCommas, genDiff($ymlFilePath1, $ymlFilePath3));
-
-        $this->expectExceptionMessage("'{$ymlFilePath4}' is not readable");
-        genDiff($ymlFilePath1, $ymlFilePath4);
 
         $this->assertEquals($correctString1WithoutQuotesAndCommas, genDiff($ymlFilePath1, $ymlFilePath2));
 
@@ -57,5 +60,16 @@ class DifferTest extends TestCase
         genDiff($jsonFilePath1, $jsonFilePath2, 'abracadabra');
 
         $this->assertEquals($correctString5, genDiff($ymlFilePath1, $ymlFilePath2, 'json'));
+    }
+
+    public function testStylish(): void
+    {
+        $fixturesPath = __DIR__ . '/fixtures/';
+        $correctString3 = file_get_contents($fixturesPath . 'positiveTestResult.txt');
+        $correctString3WithoutQuotesAndCommas = str_replace(['"', ','], '', $correctString3);
+        $jsonFilePath1 = $fixturesPath . 'file1.json';
+        $jsonFilePath2 = $fixturesPath . 'file2.json';
+
+        $this->assertEquals($correctString3WithoutQuotesAndCommas, genDiff($jsonFilePath1, $jsonFilePath2, 'stylish'));
     }
 }
