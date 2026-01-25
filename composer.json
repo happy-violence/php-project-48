@@ -19,13 +19,13 @@
     ],
     "autoload": {
         "files": [
-            "src/differ.php",
-            "src/stringify.php",
-            "src/parser.php",
-            "src/formatters/stylish.php",
-            "src/formatters/plain.php",
-            "src/formatters/json.php",
-            "src/formatters/Formatters.php"
+            "src/Differ.php",
+            "src/Stringify.php",
+            "src/Parser.php",
+            "src/Formatters/Stylish.php",
+            "src/Formatters/Plain.php",
+            "src/Formatters/Json.php",
+            "src/Formatters.php"
         ]
     },
     "autoload-dev": {

@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Parsers;
+namespace Differ\Parser;
 
 use Symfony\Component\Yaml\Yaml;
 
-use function App\Differ\getExtension;
+use function Differ\Differ\getExtension;
+use function Differ\Differ\readFile;
 
 function parse(string $file): object
 {
     $fileContent = readFile($file);
-    //var_dump($fileContent);die;
-    //var_dump($file);die;
 
     return match(getExtension($file)) {
         'json' => parseJson($fileContent),
@@ -22,7 +21,6 @@ function parse(string $file): object
 function parseJson(string $fileContent): mixed
 {
     return json_decode($fileContent);
-    //var_dump(json_decode($fileContent));die;
 }
 
 function parseYaml(string $fileContent): object

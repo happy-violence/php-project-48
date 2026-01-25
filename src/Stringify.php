@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Stringify;
+namespace Differ\Stringify;
 
 function stringify(mixed $item): string
 {

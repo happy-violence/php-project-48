@@ -1,13 +1,35 @@
 <?php
 
-namespace App\Formatter;
+namespace Differ\Formatters\Plain;
 
-use function App\Stringify\stringify;
+//use function App\Stringify\stringify;
 
 function isComplexValue(mixed $value): bool
 {
     return is_array($value);
 }
+
+function stringify(mixed $item): string
+{
+    if (gettype($item) === 'boolean') {
+        return $item ? 'true' : 'false';
+    }
+
+    if (gettype($item) === 'integer') {
+        return $item;
+    }
+
+    if (gettype($item) === 'string') {
+        return $item;
+    }
+
+    if ($item === null) {
+        return 'null';
+    }
+
+    return $item;
+}
+
 
 function getValue(mixed $value): string
 {
@@ -21,7 +43,7 @@ function getValue(mixed $value): string
     return isComplexValue($value) ? "[complex value]" : stringify($value);
 }
 
-function renderForPlain(array $comparisons, string $parentKey = ''): string
+function render(array $comparisons, string $parentKey = ''): string
 {
     $array = array_reduce(
         $comparisons,
