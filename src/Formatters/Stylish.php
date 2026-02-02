@@ -31,7 +31,7 @@ function stringify(mixed $item, int $depth = 1): string
         $depth += 1;
         $properties = get_object_vars($item);
 
-        $result = array_map(function ($key, $property) use ($depth)  {
+        $result = array_map(function ($key, $property) use ($depth) {
             return countIndent($depth) . $key . ': ' . stringify($property, $depth);
         }, array_keys($properties), array_values($properties));
 
@@ -51,20 +51,26 @@ function render(array $comparisons, int $depth = 1): string
             $result[] = "{$indent}  {$comparison['key']}: " . render($comparison['children'], $depth + 1);
         } else {
             if ($comparison['status'] === 'changed') {
-                $result[] = "{$indent}- " . stringify($comparison['key']) . ": " . stringify($comparison['oldValue'], $depth);
-                $result[] = "{$indent}+ " . stringify($comparison['key']) . ": " . stringify($comparison['newValue'], $depth);
+                $result[] = "{$indent}- " . stringify($comparison['key']) . ": " .
+                    stringify($comparison['oldValue'], $depth);
+
+                $result[] = "{$indent}+ " . stringify($comparison['key']) . ": " .
+                    stringify($comparison['newValue'], $depth);
             }
 
             if ($comparison['status'] === 'unchanged') {
-                $result[] = "{$indent}  " . stringify($comparison['key']) . ": " . stringify($comparison['value'], $depth);
+                $result[] = "{$indent}  " . stringify($comparison['key']) . ": " .
+                    stringify($comparison['value'], $depth);
             }
 
             if ($comparison['status'] === 'deleted') {
-                $result[] = "{$indent}- " . stringify($comparison['key']) . ": " . stringify($comparison['oldValue'], $depth);
+                $result[] = "{$indent}- " . stringify($comparison['key']) . ": " .
+                    stringify($comparison['oldValue'], $depth);
             }
 
             if ($comparison['status'] === 'added') {
-                $result[] = "{$indent}+ " . stringify($comparison['key']) . ": " . stringify($comparison['newValue'], $depth);
+                $result[] = "{$indent}+ " . stringify($comparison['key']) . ": " .
+                    stringify($comparison['newValue'], $depth);
             }
         }
     }
