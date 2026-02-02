@@ -12,41 +12,44 @@ class DifferTest extends TestCase
     {
         $fixturesPath = __DIR__ . '/fixtures/';
 
-        $correctString1 = file_get_contents($fixturesPath . 'test1.txt');
-        $correctString1WithoutQuotesAndCommas = str_replace(['"', ','], '', $correctString1);
+        $correctString1 = file_get_contents($fixturesPath . 'positiveResultForStylish.txt');
+        $testYaml1AndYaml2 = str_replace(['"', ','], '', $correctString1);
 
         $correctString2 = file_get_contents($fixturesPath . 'test2.txt');
-        $correctString2WithoutQuotesAndCommas = str_replace(['"', ','], '', $correctString2);
+        $testYaml1AndEmptyYaml = str_replace(['"', ','], '', $correctString2);
+
+        $correctString3 = file_get_contents($fixturesPath . 'test3.txt');
+        $testJson1AndEmptyJson = str_replace(['"', ','], '', $correctString3);
 
         $correctString3 = file_get_contents($fixturesPath . 'positiveResultForStylish.txt');
-        $correctString3WithoutQuotesAndCommas = str_replace(['"', ','], '', $correctString3);
+        $positiveResultForStylish = str_replace(['"', ','], '', $correctString3);
 
         $jsonFilePath1 = $fixturesPath . 'file1.json';
         $jsonFilePath2 = $fixturesPath . 'file2.json';
-        $jsonFilePath3 = $fixturesPath . 'emptyFile1.json';
-        $jsonFilePath4 = $fixturesPath . 'fileee.json';
+        $jsonEmptyFilePath = $fixturesPath . 'emptyFile.json';
+        $jsonNotExistFilePath = $fixturesPath . 'fileee.json';
 
         $ymlFilePath1 = $fixturesPath . 'file1.yml';
         $ymlFilePath2 = $fixturesPath . 'file2.yaml';
-        $ymlFilePath3 = $fixturesPath . 'emptyFile3.yml';
-        $ymlFilePath4 = $fixturesPath . 'filedfw.yml';
+        $ymlEmptyFilePath = $fixturesPath . 'emptyFile.yml';
+        $ymlNotExistFilePath = $fixturesPath . 'filedfw.yml';
 
-        $jpgFilePath1 = $fixturesPath . 'file2.jpg';
+        $jpgFilePath1 = $fixturesPath . 'file.jpg';
 
-        $this->assertEquals($correctString1WithoutQuotesAndCommas, genDiff($jsonFilePath1, $jsonFilePath3));
+        $this->assertEquals($testJson1AndEmptyJson, genDiff($jsonFilePath1, $jsonEmptyFilePath));
 
-        $this->expectExceptionMessage("'{$jsonFilePath4}' is not readable");
-        genDiff($jsonFilePath1, $jsonFilePath4);
-        $this->expectExceptionMessage("'{$ymlFilePath4}' is not readable");
-        genDiff($ymlFilePath1, $ymlFilePath4);
+        $this->expectExceptionMessage("'{$jsonNotExistFilePath}' is not readable");
+        genDiff($jsonFilePath1, $jsonNotExistFilePath);
+        $this->expectExceptionMessage("'{$ymlNotExistFilePath}' is not readable");
+        genDiff($ymlFilePath1, $ymlNotExistFilePath);
         $this->expectExceptionMessage("File {$jpgFilePath1} not supported. Choose 'json', 'yaml' or 'yml' extension");
         genDiff($jsonFilePath1, $jpgFilePath1);
 
-        $this->assertEquals($correctString3WithoutQuotesAndCommas, genDiff($jsonFilePath1, $jsonFilePath2));
+        $this->assertEquals($positiveResultForStylish, genDiff($jsonFilePath1, $jsonFilePath2));
 
-        $this->assertEquals($correctString2WithoutQuotesAndCommas, genDiff($ymlFilePath1, $ymlFilePath3));
+        $this->assertEquals($testYaml1AndEmptyYaml, genDiff($ymlFilePath1, $ymlEmptyFilePath));
 
-        $this->assertEquals($correctString1WithoutQuotesAndCommas, genDiff($ymlFilePath1, $ymlFilePath2));
+        $this->assertEquals($testYaml1AndYaml2, genDiff($ymlFilePath1, $ymlFilePath2));
 
         $this->expectExceptionMessage("Unknown format. Please choose stylish, plain or json format");
         genDiff($jsonFilePath1, $jsonFilePath2, 'abracadabra');
@@ -58,9 +61,9 @@ class DifferTest extends TestCase
         $jsonFilePath1 = $fixturesPath . 'file1.json';
         $jsonFilePath2 = $fixturesPath . 'file2.json';
         $correctString = file_get_contents($fixturesPath . 'positiveResultForStylish.txt');
-        $correctString3WithoutQuotesAndCommas = str_replace(['"', ','], '', $correctString);
+        $positiveResultForStylish = str_replace(['"', ','], '', $correctString);
 
-        $this->assertEquals($correctString3WithoutQuotesAndCommas, genDiff($jsonFilePath1, $jsonFilePath2));
+        $this->assertEquals($positiveResultForStylish, genDiff($jsonFilePath1, $jsonFilePath2));
     }
 
     public function testPlain(): void

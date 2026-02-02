@@ -2,11 +2,9 @@
 
 namespace Differ\Formatters\Plain;
 
-//use function App\Stringify\stringify;
-
 function isComplexValue(mixed $value): bool
 {
-    return is_array($value);
+    return is_object($value);
 }
 
 function stringify(mixed $item): string
@@ -20,36 +18,23 @@ function stringify(mixed $item): string
     }
 
     if (gettype($item) === 'string') {
-        return $item;
+        return "'{$item}'";
     }
 
     if ($item === null) {
         return 'null';
     }
 
-    return $item;
-}
-
-
-function getValue(mixed $value): string
-{
-    if (gettype($value) === 'boolean' || $value === 'null') {
-        return stringify($value);
-    }
-    if (gettype($value) === 'string') {
-        return "'{$value}'";
-    }
-
-    return isComplexValue($value) ? "[complex value]" : stringify($value);
+    return isComplexValue($item) ? "[complex value]" : $item;
 }
 
 function render(array $comparisons, string $parentKey = ''): string
 {
-    $array = array_reduce(
-        $comparisons,
-        function ($acc, $comparison) use ($parentKey) {
+    $filteredComparisons = array_filter($comparisons, fn ($comparison) => $comparison['status'] !== 'unchanged');
+    $result = array_map(
+        function (mixed $comparison) use ($parentKey) {
             if ($comparison['status'] === 'unchanged') {
-                return $acc;
+                return null;
             }
 
             if (!empty($parentKey)) {
@@ -59,21 +44,18 @@ function render(array $comparisons, string $parentKey = ''): string
             }
 
             if ($comparison['status'] === 'nested') {
-                $acc[] = renderForPlain($comparison['children'], $childrenKey);
-                return $acc;
+                return render($comparison['children'], $childrenKey);
             }
 
-            $acc[] = match ($comparison['status']) {
-                'added' => "Property '{$childrenKey}' was added with value: " . getValue($comparison['newValue']),
+            return match ($comparison['status']) {
+                'added' => "Property '{$childrenKey}' was added with value: " . stringify($comparison['newValue']),
                 'deleted' => "Property '{$childrenKey}' was removed",
                 'changed' => "Property '{$childrenKey}' was updated. From " .
-                    getValue($comparison['oldValue']) . " to " . getValue($comparison['newValue']),
+                    stringify($comparison['oldValue']) . " to " . stringify($comparison['newValue']),
             };
-
-            return $acc;
         },
-        []
+        $filteredComparisons
     );
 
-    return implode("\n", $array);
+    return implode("\n", $result);
 }

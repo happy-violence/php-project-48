@@ -42,67 +42,40 @@ function buildInnerTree($data1, $data2)
     $keys1 = array_keys($data1);
     $keys2 = array_keys($data2);
     $commonKeys = array_unique(array_merge($keys1, $keys2));
-    $sortedKeys = Collection\sortBy($commonKeys, function ($key) {
-        return $key;
-    });
+    $sortedKeys = Collection\sortBy($commonKeys, fn ($key) => $key);
 
-
-
-    return array_map(function ($key) use ($data1, $data2) {
-
+    $result = array_map(function ($key) use ($data1, $data2) {
         if (!array_key_exists($key, $data2)) {
-            if (is_object($data1[$key])) {
-                $oldValue = buildInnerTree($data1[$key], $data1[$key]);
-            } else {
-                $oldValue = $data1[$key];
-            }
-
-            $status = 'deleted';
-            return ['key' => $key, 'oldValue' => $oldValue, 'status' => $status];
+            $oldValue = $data1[$key];
+            return ['key' => $key, 'oldValue' => $oldValue, 'status' => 'deleted'];
         }
 
         if (!array_key_exists($key, $data1)) {
-            if (is_object($data2[$key])) {
-                $newValue = buildInnerTree($data2[$key], $data2[$key]);
-            } else {
-                $newValue = $data2[$key];
-            }
-
-            $status = 'added';
-            return ['key' => $key, 'newValue' => $newValue, 'status' => $status];
+            $newValue = $data2[$key];
+            return ['key' => $key, 'newValue' => $newValue, 'status' => 'added'];
         }
 
-        if (!is_object($data1[$key]) || !is_object($data2[$key])) {
-            if ($data1[$key] !== $data2[$key]) {
-                if (is_object($data1[$key])) {
-                    $oldValue = buildInnerTree($data1[$key], $data1[$key]);
-                } else {
-                    $oldValue = $data1[$key];
-                }
+        if ($data1[$key] !== $data2[$key]) {
+            if (is_object($data1[$key]) && is_object($data2[$key])) {
+                $children = buildInnerTree($data1[$key], $data2[$key]);
+                return ['key' => $key, 'children' => $children, 'status' => 'nested'];
+            } else {
+                $oldValue = $data1[$key];
+                $newValue = $data2[$key];
 
-                if (is_object($data2[$key])) {
-                    $newValue = buildInnerTree($data2[$key], $data2[$key]);
-                } else {
-                    $newValue = $data2[$key];
-                }
-
-                $status = 'changed';
                 return [
                     'key' => $key,
                     'oldValue' => $oldValue,
                     'newValue' => $newValue,
-                    'status' => $status
+                    'status' => 'changed'
                 ];
-            } else {
-                $value = $data1[$key];
-                $status = 'unchanged';
-                return ['key' => $key, 'value' => $value, 'status' => $status];
             }
-        } else {
-            $children = buildInnerTree($data1[$key], $data2[$key]);
-            $status = 'nested';
-            return ['key' => $key, 'children' => $children, 'status' => $status];
         }
+
+        $value = $data1[$key];
+        return ['key' => $key, 'value' => $value, 'status' => 'unchanged'];
     },
         $sortedKeys);
+
+    return $result;
 }
