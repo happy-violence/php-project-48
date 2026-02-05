@@ -2,7 +2,7 @@
 
 namespace Differ\Formatters;
 
-function chooseFormat(array $innerTree, string $formatName): string
+function format(array $innerTree, string $formatName): string
 {
     return match ($formatName) {
         'plain' => Plain\render($innerTree),

@@ -5,7 +5,7 @@ namespace Differ\Differ;
 use Funct\Collection;
 
 use function Differ\Parser\parse;
-use function Differ\Formatters\chooseFormat;
+use function Differ\Formatters\format;
 
 function genDiff(string $file1, string $file2, $formatName = 'stylish'): string
 {
@@ -13,7 +13,7 @@ function genDiff(string $file1, string $file2, $formatName = 'stylish'): string
     $data2 = parse($file2);
 
     $innerTree = buildInnerTree($data1, $data2);
-    return chooseFormat($innerTree, $formatName);
+    return format($innerTree, $formatName);
 }
 
 function getAbsolutePath(string $path): string
