@@ -5,11 +5,11 @@ namespace Differ\Parser;
 use Symfony\Component\Yaml\Yaml;
 
 use function Differ\Differ\getExtension;
-use function Differ\Differ\readFile;
+use function Differ\Differ\getFileData;
 
 function parse(string $file): object
 {
-    $fileContent = readFile($file);
+    $fileContent = getFileData($file);
 
     return match (getExtension($file)) {
         'json' => parseJson($fileContent),

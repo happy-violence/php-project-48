@@ -27,7 +27,7 @@ function getExtension(string $path)
     return $pathInfo['extension'];
 }
 
-function readFile(string $filePath): string
+function getFileData(string $filePath): string
 {
     return is_readable($filePath)
         ? file_get_contents($filePath)
