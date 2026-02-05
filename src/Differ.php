@@ -72,8 +72,7 @@ function buildInnerTree($data1, $data2)
             }
         }
 
-        $value = $data1[$key];
-        return ['key' => $key, 'value' => $value, 'status' => 'unchanged'];
+        return ['key' => $key, 'value' => $data1[$key], 'status' => 'unchanged'];
     },
         $sortedKeys);
 
