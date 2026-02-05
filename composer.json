@@ -20,7 +20,6 @@
     "autoload": {
         "files": [
             "src/Differ.php",
-            "src/Stringify.php",
             "src/Parser.php",
             "src/Formatters/Stylish.php",
             "src/Formatters/Plain.php",
