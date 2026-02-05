@@ -12,19 +12,9 @@ function parse(string $file): object
     $fileContent = getFileData($file);
 
     return match (getExtension($file)) {
-        'json' => parseJson($fileContent),
-        'yaml', 'yml' => parseYaml($fileContent),
+        'json' => json_decode($fileContent),
+        'yaml', 'yml' => (object) Yaml::parse($fileContent, Yaml::PARSE_OBJECT_FOR_MAP),
         default => throw new \Exception("Extension " . getExtension($file) .
             "is not supported. Choose 'json', 'yaml' or 'yml' extension"),
     };
-}
-
-function parseJson(string $fileContent): mixed
-{
-    return json_decode($fileContent);
-}
-
-function parseYaml(string $fileContent): object
-{
-    return (object) Yaml::parse($fileContent, Yaml::PARSE_OBJECT_FOR_MAP);
 }
