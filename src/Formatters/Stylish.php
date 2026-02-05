@@ -2,7 +2,7 @@
 
 namespace Differ\Formatters\Stylish;
 
-function countIndent($depth, $specialSymbol = 0): string
+function makeIndent($depth, $specialSymbol = 0): string
 {
     $spacesCount = 4;
     $replacer = ' ';
@@ -32,10 +32,10 @@ function stringify(mixed $item, int $depth = 1): string
         $properties = get_object_vars($item);
 
         $result = array_map(function ($key, $property) use ($depth) {
-            return countIndent($depth) . $key . ': ' . stringify($property, $depth);
+            return makeIndent($depth) . $key . ': ' . stringify($property, $depth);
         }, array_keys($properties), array_values($properties));
 
-        return "{\n" . implode("\n", $result) . "\n" . countIndent($depth - 1) . "}";
+        return "{\n" . implode("\n", $result) . "\n" . makeIndent($depth - 1) . "}";
     }
 
     return $item;
@@ -44,7 +44,7 @@ function stringify(mixed $item, int $depth = 1): string
 function render(array $comparisons, int $depth = 1): string
 {
     $result = [];
-    $indent = countIndent($depth, 2);
+    $indent = makeIndent($depth, 2);
 
     foreach ($comparisons as $comparison) {
         if ($comparison['status'] === 'nested') {
@@ -75,6 +75,6 @@ function render(array $comparisons, int $depth = 1): string
         }
     }
 
-    $indentForClosedBrace = countIndent($depth - 1);
+    $indentForClosedBrace = makeIndent($depth - 1);
     return "{\n" . implode("\n", $result) . "\n{$indentForClosedBrace}}";
 }
