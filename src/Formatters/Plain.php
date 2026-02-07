@@ -39,14 +39,11 @@ function render(array $comparisons, string $parentKey = ''): string
                 $childrenKey = $comparison['key'];
             }
 
-            if ($comparison['status'] === 'nested') {
-                return render($comparison['children'], $childrenKey);
-            }
-
             $oldValue = stringify($comparison['oldValue']);
             $newValue = stringify($comparison['newValue']);
 
             return match ($comparison['status']) {
+                'nested' => render($comparison['children'], $childrenKey),
                 'added' => "Property '{$childrenKey}' was added with value: " . stringify($comparison['newValue']),
                 'deleted' => "Property '{$childrenKey}' was removed",
                 'changed' => "Property '{$childrenKey}' was updated. From {$oldValue} to {$newValue}",
