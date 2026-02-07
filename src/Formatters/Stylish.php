@@ -47,29 +47,31 @@ function render(array $comparisons, int $depth = 1): string
     $indent = makeIndent($depth, 2);
 
     foreach ($comparisons as $comparison) {
+        $key = stringify($comparison['key']);
+
         if ($comparison['status'] === 'nested') {
-            $result[] = "{$indent}  {$comparison['key']}: " . render($comparison['children'], $depth + 1);
+            $result[] = "{$indent}  {$key}: " . render($comparison['children'], $depth + 1);
         } else {
             if ($comparison['status'] === 'changed') {
-                $result[] = "{$indent}- " . stringify($comparison['key']) . ": " .
+                $result[] = "{$indent}- {$key}: " .
                     stringify($comparison['oldValue'], $depth);
 
-                $result[] = "{$indent}+ " . stringify($comparison['key']) . ": " .
+                $result[] = "{$indent}+ {$key}: " .
                     stringify($comparison['newValue'], $depth);
             }
 
             if ($comparison['status'] === 'unchanged') {
-                $result[] = "{$indent}  " . stringify($comparison['key']) . ": " .
+                $result[] = "{$indent}  {$key}: " .
                     stringify($comparison['value'], $depth);
             }
 
             if ($comparison['status'] === 'deleted') {
-                $result[] = "{$indent}- " . stringify($comparison['key']) . ": " .
+                $result[] = "{$indent}- {$key}: " .
                     stringify($comparison['oldValue'], $depth);
             }
 
             if ($comparison['status'] === 'added') {
-                $result[] = "{$indent}+ " . stringify($comparison['key']) . ": " .
+                $result[] = "{$indent}+ {$key}: " .
                     stringify($comparison['newValue'], $depth);
             }
         }
