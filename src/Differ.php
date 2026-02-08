@@ -21,7 +21,7 @@ function getAbsolutePath(string $path): string
     return (str_starts_with($path, '/') ? $path : __DIR__ . '/../' . $path);
 }
 
-function getExtension(string $path)
+function getFormat(string $path)
 {
     $pathInfo = pathinfo($path);
     return $pathInfo['extension'];
