@@ -16,11 +16,6 @@ function genDiff(string $file1, string $file2, $formatName = 'stylish'): string
     return format($innerTree, $formatName);
 }
 
-function getAbsolutePath(string $path): string
-{
-    return (str_starts_with($path, '/') ? $path : __DIR__ . '/../' . $path);
-}
-
 function getFormat(string $path)
 {
     $pathInfo = pathinfo($path);
