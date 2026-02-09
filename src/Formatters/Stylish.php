@@ -43,9 +43,24 @@ function stringify(mixed $item, int $depth = 1): string
 
 function render(array $comparisons, int $depth = 1): string
 {
-    $result = [];
+    //$result = [];
     $indent = makeIndent($depth, 2);
 
+    /*$result = array_map(
+        function ($node) {
+            $key = stringify($node['key']);
+
+            return match ($node['status']) {
+                'nested' => "{$indent}  {$node['key']}: " . render($node['children'], $depth + 1),
+                'added' => "{$indent}+ {$key}: " . stringify($node['newValue'], $depth),
+                'deleted' => "{$indent}- {$key}: " . stringify($node['oldValue'], $depth),
+                //в changed нужно добавить 2 значения: oldValue и newValue
+                'changed' => "{$indent}- {$key}: " . stringify($node['oldValue'], $depth) . "\n{$indent}+ {$key}: ". stringify($node['newValue'], $depth),
+                //"{$indent}+ {$key}: " . stringify($node['newValue'], $depth)
+            };
+        },
+        $comparisons
+    );*/
     foreach ($comparisons as $comparison) {
         $key = stringify($comparison['key']);
 

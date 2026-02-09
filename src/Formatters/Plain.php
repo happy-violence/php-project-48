@@ -21,7 +21,7 @@ function stringify(mixed $item): string
         return 'null';
     }
 
-    if (gettype($item) === 'integer') {
+    if (is_int($item)) {
         return (string) $item;
     }
 
@@ -30,21 +30,21 @@ function stringify(mixed $item): string
 
 function render(array $comparisons, string $parentKey = ''): string
 {
-    $filteredComparisons = array_filter($comparisons, fn ($comparison) => $comparison['status'] !== 'unchanged');
+    $filteredComparisons = array_filter($comparisons, fn ($node) => $node['status'] !== 'unchanged');
     $result = array_map(
-        function (mixed $comparison) use ($parentKey) {
+        function (mixed $node) use ($parentKey) {
             if (!empty($parentKey)) {
-                $childrenKey = "{$parentKey}.{$comparison['key']}";
+                $childrenKey = "{$parentKey}.{$node['key']}";
             } else {
-                $childrenKey = $comparison['key'];
+                $childrenKey = $node['key'];
             }
 
-            $oldValue = stringify($comparison['oldValue']);
-            $newValue = stringify($comparison['newValue']);
+            $oldValue = stringify($node['oldValue']);
+            $newValue = stringify($node['newValue']);
 
-            return match ($comparison['status']) {
-                'nested' => render($comparison['children'], $childrenKey),
-                'added' => "Property '{$childrenKey}' was added with value: " . stringify($comparison['newValue']),
+            return match ($node['status']) {
+                'nested' => render($node['children'], $childrenKey),
+                'added' => "Property '{$childrenKey}' was added with value: " . stringify($node['newValue']),
                 'deleted' => "Property '{$childrenKey}' was removed",
                 'changed' => "Property '{$childrenKey}' was updated. From {$oldValue} to {$newValue}",
             };
