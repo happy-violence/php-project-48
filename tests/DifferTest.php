@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 use function Differ\Differ\genDiff;
@@ -13,20 +14,34 @@ class DifferTest extends TestCase
         return (__DIR__ . '/fixtures/' . $file);
     }
 
-    public function testGenDiff(): void
+    #[DataProvider('jsonAndYamlProvider')]
+    public function testGenDiff(string $expected, string $argument1, string $argument2, string $format = 'stylish'): void
     {
-        $testYaml1AndEmptyYaml = $this->getPath('test2.txt');
-        $testJson1AndEmptyJson = $this->getPath('test3.txt');
-        $positiveResultForStylish = $this->getPath('positiveResultForStylish.txt');
+        $expected = $this->getPath($expected);
+        $argument1 = $this->getPath($argument1);
+        $argument2 = $this->getPath($argument2);
 
+        $this->assertStringEqualsFile($expected, genDiff($argument1, $argument2));
+    }
+
+    public static function jsonAndYamlProvider(): array
+    {
+        return [
+            ['positiveResultForStylish.txt', 'file1.json', 'file2.json'],
+            ['positiveResultForStylish.txt', 'file1.yml', 'file2.yaml'],
+            ['test3.txt', 'file1.yml', 'emptyFile.yml'],
+            ['test3.txt', 'file1.json', 'emptyFile.json'],
+            ['test2.txt', 'file2.yaml', 'emptyFile.yml'],
+            ['test2.txt', 'file2.json', 'emptyFile.json'],
+        ];
+    }
+
+    public function testBorderlineCases(): void
+    {
+        $ymlFilePath1 = $this->getPath('file1.yml');
         $jsonFilePath1 = $this->getPath('file1.json');
         $jsonFilePath2 = $this->getPath('file2.json');
-        $jsonEmptyFilePath = $this->getPath('emptyFile.json');
         $jsonNotExistFilePath = $this->getPath('fileee.json');
-
-        $ymlFilePath1 = $this->getPath('file1.yml');
-        $ymlFilePath2 = $this->getPath('file2.yaml');
-        $ymlEmptyFilePath = $this->getPath('emptyFile.yml');
         $ymlNotExistFilePath = $this->getPath('filedfw.yml');
 
         $jpgFilePath1 = $this->getPath('file.jpg');
@@ -38,10 +53,6 @@ class DifferTest extends TestCase
         $this->expectExceptionMessage("File {$jpgFilePath1} not supported. Choose 'json', 'yaml' or 'yml' extension");
         genDiff($jsonFilePath1, $jpgFilePath1);
 
-        $this->assertStringEqualsFile($testJson1AndEmptyJson, genDiff($jsonFilePath1, $jsonEmptyFilePath));
-        $this->assertStringEqualsFile($positiveResultForStylish, genDiff($jsonFilePath1, $jsonFilePath2));
-        $this->assertStringEqualsFile($testYaml1AndEmptyYaml, genDiff($ymlFilePath1, $ymlEmptyFilePath));
-        $this->assertStringEqualsFile($positiveResultForStylish, genDiff($ymlFilePath1, $ymlFilePath2));
         $this->expectExceptionMessage("Unknown format. Please choose stylish, plain or json format");
         genDiff($jsonFilePath1, $jsonFilePath2, 'abracadabra');
     }
@@ -50,17 +61,17 @@ class DifferTest extends TestCase
     {
         $jsonFilePath1 = $this->getPath('file1.json');
         $jsonFilePath2 = $this->getPath('file2.json');
-        $positiveResultForStylish = $this->getPath('positiveResultForStylish.txt');
-        $this->assertStringEqualsFile($positiveResultForStylish, genDiff($jsonFilePath1, $jsonFilePath2));
+        $expected = $this->getPath('positiveResultForStylish.txt');
+        $this->assertStringEqualsFile($expected, genDiff($jsonFilePath1, $jsonFilePath2, 'stylish'));
     }
 
     public function testPlain(): void
     {
         $jsonFilePath1 = $this->getPath('file1.json');
         $jsonFilePath2 = $this->getPath('file2.json');
-        $correctString = $this->getPath('positiveResultForPlain.txt');
+        $expected = $this->getPath('positiveResultForPlain.txt');
 
-        $this->assertStringEqualsFile($correctString, genDiff($jsonFilePath1, $jsonFilePath2, 'plain'));
+        $this->assertStringEqualsFile($expected, genDiff($jsonFilePath1, $jsonFilePath2, 'plain'));
     }
 
     public function testJson(): void
