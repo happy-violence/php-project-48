@@ -28,23 +28,19 @@ function stringify(mixed $item): string
     return isComplexValue($item) ? "[complex value]" : $item;
 }
 
-function render(array $comparisons, string $parentKey = ''): string
+function iter(array $comparisons, string $ancestry = '', $depth = 0): string
 {
     $filteredComparisons = array_filter($comparisons, fn ($node) => $node['status'] !== 'unchanged');
     $result = array_map(
-        function (mixed $node) use ($parentKey) {
-            if (!empty($parentKey)) {
-                $childrenKey = "{$parentKey}.{$node['key']}";
-            } else {
-                $childrenKey = $node['key'];
-            }
+        function (mixed $node) use ($ancestry, $depth) {
+            $childrenKey = !empty($ancestry) ? "$ancestry.{$node['key']}" : $node['key'];
 
             $oldValue = stringify($node['oldValue']);
             $newValue = stringify($node['newValue']);
 
             return match ($node['status']) {
-                'nested' => render($node['children'], $childrenKey),
-                'added' => "Property '{$childrenKey}' was added with value: " . stringify($node['newValue']),
+                'nested' => iter($node['children'], $childrenKey, $depth + 1),
+                'added' => "Property '{$childrenKey}' was added with value: {$newValue}",
                 'deleted' => "Property '{$childrenKey}' was removed",
                 'changed' => "Property '{$childrenKey}' was updated. From {$oldValue} to {$newValue}",
             };
@@ -53,4 +49,9 @@ function render(array $comparisons, string $parentKey = ''): string
     );
 
     return implode("\n", $result);
+}
+
+function render($tree): string
+{
+    return iter($tree, '', 0);
 }
