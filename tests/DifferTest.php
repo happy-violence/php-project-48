@@ -15,8 +15,12 @@ class DifferTest extends TestCase
     }
 
     #[DataProvider('jsonAndYamlProvider')]
-    public function testGenDiff(string $expected, string $argument1, string $argument2, string $format = 'stylish'): void
-    {
+    public function testGenDiff(
+        string $expected,
+        string $argument1,
+        string $argument2,
+        string $format = 'stylish'
+    ): void {
         $expected = $this->getPath($expected);
         $argument1 = $this->getPath($argument1);
         $argument2 = $this->getPath($argument2);
