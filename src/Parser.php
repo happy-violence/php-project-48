@@ -4,17 +4,13 @@ namespace Differ\Parser;
 
 use Symfony\Component\Yaml\Yaml;
 
-use function Differ\Differ\getFormat;
-use function Differ\Differ\getFileData;
-
-function parse(string $file): object
+function parse(string $data, $format): object
 {
-    $fileContent = getFileData($file);
-
-    return match (getFormat($file)) {
-        'json' => json_decode($fileContent),
-        'yaml', 'yml' => (object) Yaml::parse($fileContent, Yaml::PARSE_OBJECT_FOR_MAP),
-        default => throw new \Exception("Extension " . getFormat($file) .
-            "is not supported. Choose 'json', 'yaml' or 'yml' extension"),
+    return match ($format) {
+        'json' => json_decode($data),
+        'yaml', 'yml' => (object) Yaml::parse($data, Yaml::PARSE_OBJECT_FOR_MAP),
+        default => throw new \Exception(
+            "Extension {$format} is not supported. Choose 'json', 'yaml' or 'yml' extension"
+        ),
     };
 }

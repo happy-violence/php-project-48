@@ -7,13 +7,19 @@ use Funct\Collection;
 use function Differ\Parser\parse;
 use function Differ\Formatters\format;
 
-function genDiff(string $file1, string $file2, $formatName = 'stylish'): string
+function genDiff(string $path1, string $path2, $outputFormat = 'stylish'): string
 {
-    $data1 = parse($file1);
-    $data2 = parse($file2);
+    $fileContent1 = getFileData($path1);
+    $fileContent2 = getFileData($path2);
+
+    $fileFormat1 = getFormat($path1);
+    $fileFormat2 = getFormat($path2);
+
+    $data1 = parse($fileContent1, $fileFormat1);
+    $data2 = parse($fileContent2, $fileFormat2);
 
     $innerTree = buildInnerTree($data1, $data2);
-    return format($innerTree, $formatName);
+    return format($innerTree, $outputFormat);
 }
 
 function getFormat(string $path)
