@@ -34,7 +34,6 @@ function iter(array $comparisons, string $ancestry = '', $depth = 0): string
     $result = array_map(
         function (mixed $node) use ($ancestry, $depth) {
             $childrenKey = !empty($ancestry) ? "$ancestry.{$node['key']}" : $node['key'];
-            
             return match ($node['status']) {
                 'nested' => iter($node['children'], $childrenKey, $depth + 1),
                 'added' => "Property '{$childrenKey}' was added with value: " . stringify($node['newValue'] ?? null),
