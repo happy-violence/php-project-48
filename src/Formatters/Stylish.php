@@ -26,10 +26,14 @@ function stringify(mixed $item, int $depth = 1): string
     $properties = get_object_vars($item);
 
     $result = array_map(function ($key, $property) use ($depth) {
-        return makeIndent($depth + 1) . $key . ': ' . stringify($property, $depth + 1);
+        $indent = makeIndent($depth + 1);
+        $modifiedProperty = stringify($property, $depth + 1);
+        return "{$indent}{$key}: {$modifiedProperty}";
     }, array_keys($properties), array_values($properties));
 
-    return "{\n" . implode("\n", $result) . "\n" . makeIndent($depth) . "}";
+    $string = implode("\n", $result);
+    $indent = makeIndent($depth);
+    return "{\n{$string}\n{$indent}}";
 }
 
 function iter(array $comparisons, int $depth = 1): string
@@ -38,21 +42,24 @@ function iter(array $comparisons, int $depth = 1): string
         function ($node) use ($depth) {
             $key = $node['key'];
             $indent = makeIndent($depth, 2);
+            $value = stringify($node['value'], $depth);
+            $oldValue = stringify($node['oldValue'], $depth);
+            $newValue = stringify($node['newValue'], $depth);
 
             return match ($node['type']) {
-                'nested' => makeIndent($depth) . "{$node['key']}: " . iter($node['children'], $depth + 1),
-                'added' => "{$indent}+ {$key}: " . stringify($node['newValue'], $depth),
-                'deleted' => "{$indent}- {$key}: " . stringify($node['oldValue'], $depth),
-                'changed' => "{$indent}- {$key}: " . stringify($node['oldValue'], $depth) .
-                    "\n{$indent}+ {$key}: " . stringify($node['newValue'], $depth),
-                'unchanged' => "{$indent}  {$key}: " . stringify($node['value'], $depth),
+                'nested' => makeIndent($depth) . $node['key'] . ": " . iter($node['children'], $depth + 1),
+                'added' => "{$indent}+ {$key}: {$newValue}",
+                'deleted' => "{$indent}- {$key}: {$oldValue}",
+                'changed' => "{$indent}- {$key}: {$oldValue}\n{$indent}+ {$key}: $newValue",
+                'unchanged' => "{$indent}  {$key}: {$value}",
             };
         },
         $comparisons
     );
 
     $indentForClosedBrace = makeIndent($depth - 1);
-    return "{\n" . implode("\n", $result) . "\n{$indentForClosedBrace}}";
+    $string = implode("\n", $result);
+    return "{\n{$string}\n{$indentForClosedBrace}}";
 }
 
 function render($tree): string
