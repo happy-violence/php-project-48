@@ -24,14 +24,14 @@ function stringify(mixed $item): string
     return isComplexValue($item) ? "[complex value]" : (string)$item;
 }
 
-function iter(array $comparisons, string $ancestry = '', $depth = 0): string
+function iter(array $comparisons, string $ancestry = ''): string
 {
     $filteredComparisons = array_filter($comparisons, fn ($node) => $node['type'] !== 'unchanged');
     $result = array_map(
-        function (mixed $node) use ($ancestry, $depth) {
+        function (mixed $node) use ($ancestry) {
             $childrenKey = !empty($ancestry) ? "$ancestry.{$node['key']}" : $node['key'];
             return match ($node['type']) {
-                'nested' => iter($node['children'], $childrenKey, $depth + 1),
+                'nested' => iter($node['children'], $childrenKey),
                 'added' => "Property '{$childrenKey}' was added with value: " . stringify($node['newValue'] ?? null),
                 'deleted' => "Property '{$childrenKey}' was removed",
                 'changed' => "Property '{$childrenKey}' was updated. From " . stringify($node['oldValue'] ?? null)
