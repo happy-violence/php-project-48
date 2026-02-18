@@ -15,29 +15,21 @@ function stringify(mixed $item, int $depth = 1): string
         return $item ? 'true' : 'false';
     }
 
-    if (gettype($item) === 'integer') {
-        return $item;
-    }
-
-    if (gettype($item) === 'string') {
-        return $item;
-    }
-
     if ($item === null) {
         return 'null';
     }
 
-    if (gettype($item) === 'object') {
-        $properties = get_object_vars($item);
-
-        $result = array_map(function ($key, $property) use ($depth) {
-            return makeIndent($depth + 1) . $key . ': ' . stringify($property, $depth + 1);
-        }, array_keys($properties), array_values($properties));
-
-        return "{\n" . implode("\n", $result) . "\n" . makeIndent($depth) . "}";
+    if (gettype($item) !== 'object') {
+        return (string)$item;
     }
 
-    return $item;
+    $properties = get_object_vars($item);
+
+    $result = array_map(function ($key, $property) use ($depth) {
+        return makeIndent($depth + 1) . $key . ': ' . stringify($property, $depth + 1);
+    }, array_keys($properties), array_values($properties));
+
+    return "{\n" . implode("\n", $result) . "\n" . makeIndent($depth) . "}";
 }
 
 function iter(array $comparisons, int $depth = 1): string
