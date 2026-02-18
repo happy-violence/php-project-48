@@ -9,9 +9,9 @@ use function Differ\Differ\genDiff;
 
 class DifferTest extends TestCase
 {
-    public function getPath(string $file): string
+    public function getFixturePath(string $file): string
     {
-        return (__DIR__ . '/fixtures/' . $file);
+        return implode([__DIR__, '/fixtures/', $file]);
     }
 
     #[DataProvider('jsonAndYamlProvider')]
@@ -21,9 +21,9 @@ class DifferTest extends TestCase
         string $argument2,
         string $format = 'stylish'
     ): void {
-        $expected = $this->getPath($expected);
-        $argument1 = $this->getPath($argument1);
-        $argument2 = $this->getPath($argument2);
+        $expected = $this->getFixturePath($expected);
+        $argument1 = $this->getFixturePath($argument1);
+        $argument2 = $this->getFixturePath($argument2);
 
         $this->assertStringEqualsFile($expected, genDiff($argument1, $argument2));
     }
@@ -42,13 +42,13 @@ class DifferTest extends TestCase
 
     public function testBorderlineCases(): void
     {
-        $ymlFilePath1 = $this->getPath('file1.yml');
-        $jsonFilePath1 = $this->getPath('file1.json');
-        $jsonFilePath2 = $this->getPath('file2.json');
-        $jsonNotExistFilePath = $this->getPath('fileee.json');
-        $ymlNotExistFilePath = $this->getPath('filedfw.yml');
+        $ymlFilePath1 = $this->getFixturePath('file1.yml');
+        $jsonFilePath1 = $this->getFixturePath('file1.json');
+        $jsonFilePath2 = $this->getFixturePath('file2.json');
+        $jsonNotExistFilePath = $this->getFixturePath('fileee.json');
+        $ymlNotExistFilePath = $this->getFixturePath('filedfw.yml');
 
-        $jpgFilePath1 = $this->getPath('file.jpg');
+        $jpgFilePath1 = $this->getFixturePath('file.jpg');
 
         $this->expectExceptionMessage("'{$jsonNotExistFilePath}' is not readable");
         genDiff($jsonFilePath1, $jsonNotExistFilePath);
@@ -63,26 +63,26 @@ class DifferTest extends TestCase
 
     public function testStylish(): void
     {
-        $jsonFilePath1 = $this->getPath('file1.json');
-        $jsonFilePath2 = $this->getPath('file2.json');
-        $expected = $this->getPath('positiveResultForStylish.txt');
+        $jsonFilePath1 = $this->getFixturePath('file1.json');
+        $jsonFilePath2 = $this->getFixturePath('file2.json');
+        $expected = $this->getFixturePath('positiveResultForStylish.txt');
         $this->assertStringEqualsFile($expected, genDiff($jsonFilePath1, $jsonFilePath2, 'stylish'));
     }
 
     public function testPlain(): void
     {
-        $jsonFilePath1 = $this->getPath('file1.json');
-        $jsonFilePath2 = $this->getPath('file2.json');
-        $expected = $this->getPath('positiveResultForPlain.txt');
+        $jsonFilePath1 = $this->getFixturePath('file1.json');
+        $jsonFilePath2 = $this->getFixturePath('file2.json');
+        $expected = $this->getFixturePath('positiveResultForPlain.txt');
 
         $this->assertStringEqualsFile($expected, genDiff($jsonFilePath1, $jsonFilePath2, 'plain'));
     }
 
     public function testJson(): void
     {
-        $ymlFilePath1 = $this->getPath('file1.yml');
-        $ymlFilePath2 = $this->getPath('file2.yaml');
-        $correctString = $this->getPath('positiveResultForJson.txt');
+        $ymlFilePath1 = $this->getFixturePath('file1.yml');
+        $ymlFilePath2 = $this->getFixturePath('file2.yaml');
+        $correctString = $this->getFixturePath('positiveResultForJson.txt');
 
         $this->assertStringEqualsFile($correctString, genDiff($ymlFilePath1, $ymlFilePath2, 'json'));
     }
