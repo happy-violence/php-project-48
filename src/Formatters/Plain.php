@@ -21,11 +21,7 @@ function stringify(mixed $item): string
         return 'null';
     }
 
-    if (is_int($item)) {
-        return (string) $item;
-    }
-
-    return isComplexValue($item) ? "[complex value]" : $item;
+    return isComplexValue($item) ? "[complex value]" : (string)$item;
 }
 
 function iter(array $comparisons, string $ancestry = '', $depth = 0): string
