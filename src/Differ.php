@@ -47,33 +47,27 @@ function buildInnerTree($data1, $data2)
 
     $result = array_map(function ($key) use ($data1, $data2) {
         if (!array_key_exists($key, $data2)) {
-            $oldValue = $data1[$key];
-            return ['key' => $key, 'oldValue' => $oldValue, 'status' => 'deleted'];
+            return ['key' => $key, 'oldValue' => $data1[$key], 'type' => 'deleted'];
         }
 
         if (!array_key_exists($key, $data1)) {
-            $newValue = $data2[$key];
-            return ['key' => $key, 'newValue' => $newValue, 'status' => 'added'];
+            return ['key' => $key, 'newValue' => $data2[$key], 'type' => 'added'];
         }
 
         if ($data1[$key] !== $data2[$key]) {
             if (is_object($data1[$key]) && is_object($data2[$key])) {
-                $children = buildInnerTree($data1[$key], $data2[$key]);
-                return ['key' => $key, 'children' => $children, 'status' => 'nested'];
+                return ['key' => $key, 'children' => buildInnerTree($data1[$key], $data2[$key]), 'type' => 'nested'];
             } else {
-                $oldValue = $data1[$key];
-                $newValue = $data2[$key];
-
                 return [
                     'key' => $key,
-                    'oldValue' => $oldValue,
-                    'newValue' => $newValue,
-                    'status' => 'changed'
+                    'oldValue' => $data1[$key],
+                    'newValue' => $data2[$key],
+                    'type' => 'changed'
                 ];
             }
         }
 
-        return ['key' => $key, 'value' => $data1[$key], 'status' => 'unchanged'];
+        return ['key' => $key, 'value' => $data1[$key], 'type' => 'unchanged'];
     },
         $sortedKeys);
 

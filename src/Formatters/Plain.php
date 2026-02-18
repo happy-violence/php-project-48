@@ -30,11 +30,11 @@ function stringify(mixed $item): string
 
 function iter(array $comparisons, string $ancestry = '', $depth = 0): string
 {
-    $filteredComparisons = array_filter($comparisons, fn ($node) => $node['status'] !== 'unchanged');
+    $filteredComparisons = array_filter($comparisons, fn ($node) => $node['type'] !== 'unchanged');
     $result = array_map(
         function (mixed $node) use ($ancestry, $depth) {
             $childrenKey = !empty($ancestry) ? "$ancestry.{$node['key']}" : $node['key'];
-            return match ($node['status']) {
+            return match ($node['type']) {
                 'nested' => iter($node['children'], $childrenKey, $depth + 1),
                 'added' => "Property '{$childrenKey}' was added with value: " . stringify($node['newValue'] ?? null),
                 'deleted' => "Property '{$childrenKey}' was removed",
