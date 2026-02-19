@@ -30,12 +30,14 @@ function iter(array $comparisons, string $ancestry = ''): string
     $result = array_map(
         function (mixed $node) use ($ancestry) {
             $childrenKey = !empty($ancestry) ? "$ancestry.{$node['key']}" : $node['key'];
+            $newValue = stringify($node['newValue'] ?? null);
+            $oldValue = stringify($node['oldValue'] ?? null);
+
             return match ($node['type']) {
                 'nested' => iter($node['children'], $childrenKey),
-                'added' => "Property '{$childrenKey}' was added with value: " . stringify($node['newValue'] ?? null),
+                'added' => "Property '{$childrenKey}' was added with value: {$newValue}",
                 'deleted' => "Property '{$childrenKey}' was removed",
-                'changed' => "Property '{$childrenKey}' was updated. From " . stringify($node['oldValue'] ?? null)
-                    . " to " . stringify($node['newValue'] ?? null),
+                'changed' => "Property '{$childrenKey}' was updated. From {$oldValue} to {$newValue}",
                 default => '',
             };
         },
