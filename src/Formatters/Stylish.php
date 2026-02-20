@@ -47,7 +47,10 @@ function iter(array $comparisons, int $depth = 1): string
             $newValue = stringify($node['newValue'], $depth);
 
             return match ($node['type']) {
-                'nested' => makeIndent($depth) . $node['key'] . ": " . iter($node['children'], $depth + 1),
+                'nested' => (function () use ($indent, $key, $depth, $node) {
+                    $nested = iter($node['children'], $depth + 1);
+                    return "{$indent}  {$key}: {$nested}";
+                }) (),
                 'added' => "{$indent}+ {$key}: {$newValue}",
                 'deleted' => "{$indent}- {$key}: {$oldValue}",
                 'changed' => "{$indent}- {$key}: {$oldValue}\n{$indent}+ {$key}: $newValue",
