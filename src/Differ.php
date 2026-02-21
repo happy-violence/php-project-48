@@ -28,7 +28,7 @@ function getFormat(string $path): string
     return $pathInfo['extension'];
 }
 
-function getFileData(string $filePath): string
+function getFileData(string $filePath): false|string
 {
     return is_readable($filePath)
         ? file_get_contents($filePath)
