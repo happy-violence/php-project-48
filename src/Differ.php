@@ -7,7 +7,7 @@ use Funct\Collection;
 use function Differ\Parser\parse;
 use function Differ\Formatters\format;
 
-function genDiff(string $path1, string $path2, $outputFormat = 'stylish'): string
+function genDiff(string $path1, string $path2, string $outputFormat = 'stylish'): string
 {
     $fileContent1 = getFileData($path1);
     $fileContent2 = getFileData($path2);
@@ -22,7 +22,7 @@ function genDiff(string $path1, string $path2, $outputFormat = 'stylish'): strin
     return format($innerTree, $outputFormat);
 }
 
-function getFormat(string $path)
+function getFormat(string $path): string
 {
     $pathInfo = pathinfo($path);
     return $pathInfo['extension'];
@@ -35,7 +35,7 @@ function getFileData(string $filePath): string
         : throw new \Exception("'{$filePath}' is not readable");
 }
 
-function buildInnerTree($data1, $data2)
+function buildInnerTree(object $data1, object $data2): array
 {
     $data1 = get_object_vars($data1);
     $data2 = get_object_vars($data2);

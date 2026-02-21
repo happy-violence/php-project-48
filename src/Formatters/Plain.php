@@ -47,7 +47,7 @@ function iter(array $comparisons, string $ancestry = ''): string
     return implode("\n", $result);
 }
 
-function render($tree): string
+function render(array $tree): string
 {
     return iter($tree, '', 0);
 }
