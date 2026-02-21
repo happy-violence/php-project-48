@@ -42,9 +42,9 @@ function iter(array $comparisons, int $depth = 1): string
         function ($node) use ($depth) {
             $key = $node['key'];
             $indent = makeIndent($depth, 2);
-            $value = stringify($node['value'], $depth);
-            $oldValue = stringify($node['oldValue'], $depth);
-            $newValue = stringify($node['newValue'], $depth);
+            $value = stringify($node['value'], $depth) ?? null;
+            $oldValue = stringify($node['oldValue'], $depth) ?? null;
+            $newValue = stringify($node['newValue'], $depth) ?? null;
 
             return match ($node['type']) {
                 'nested' => (function () use ($indent, $key, $depth, $node) {
