@@ -19,22 +19,32 @@ class DifferTest extends TestCase
         return [['json'], ['yaml']];
     }
 
-    public function testBorderlineCases(): void
+    public function testIsReadableFile(): void
     {
-        $ymlFilePath1 = $this->getFixturePath('file1.yaml');
+        $yamlFilePath1 = $this->getFixturePath('file1.yaml');
         $jsonFilePath1 = $this->getFixturePath('file1.json');
-        $jsonFilePath2 = $this->getFixturePath('file2.json');
         $jsonNotExistFilePath = $this->getFixturePath('fileee.json');
-        $ymlNotExistFilePath = $this->getFixturePath('filedfw.yml');
-
-        $jpgFilePath1 = $this->getFixturePath('file.jpg');
+        $yamlNotExistFilePath = $this->getFixturePath('filedfw.yml');
 
         $this->expectExceptionMessage("'{$jsonNotExistFilePath}' is not readable");
         genDiff($jsonFilePath1, $jsonNotExistFilePath);
-        $this->expectExceptionMessage("'{$ymlNotExistFilePath}' is not readable");
-        genDiff($ymlFilePath1, $ymlNotExistFilePath);
-        $this->expectExceptionMessage("File {$jpgFilePath1} not supported. Choose 'json', 'yaml' or 'yml' extension");
-        genDiff($jsonFilePath1, $jpgFilePath1);
+        $this->expectExceptionMessage("'{$yamlNotExistFilePath}' is not readable");
+        genDiff($yamlFilePath1, $yamlNotExistFilePath);
+    }
+
+    public function testExtension(): void
+    {
+        $jsonFilePath1 = $this->getFixturePath('file1.json');
+        $jpgFilePath = $this->getFixturePath('file.jpg');
+
+        $this->expectExceptionMessage("Extension is not supported. Choose 'json', 'yaml' or 'yml' extension");
+        genDiff($jsonFilePath1, $jpgFilePath);
+    }
+
+    public function testFormat(): void
+    {
+        $jsonFilePath1 = $this->getFixturePath('file1.json');
+        $jsonFilePath2 = $this->getFixturePath('file2.json');
 
         $this->expectExceptionMessage("Unknown format. Please choose stylish, plain or json format");
         genDiff($jsonFilePath1, $jsonFilePath2, 'abracadabra');
@@ -46,7 +56,7 @@ class DifferTest extends TestCase
         $path1 = $this->getFixturePath("file1.{$format}");
         $path2 = $this->getFixturePath("file2.{$format}");
         $expected = $this->getFixturePath('positiveResultForStylish.txt');
-        $this->assertStringEqualsFile($expected, genDiff($path1, $path2, 'stylish'));
+        $this->assertStringEqualsFile($expected, genDiff($path1, $path2));
     }
 
     #[DataProvider('formatsProvider')]
