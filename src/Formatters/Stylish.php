@@ -2,7 +2,7 @@
 
 namespace Differ\Formatters\Stylish;
 
-function makeIndent($depth, $specialSymbol = 0): string
+function makeIndent(int $depth, int $specialSymbol = 0): string
 {
     $spacesCount = 4;
     $replacer = ' ';
@@ -50,7 +50,7 @@ function iter(array $comparisons, int $depth = 1): string
                 'nested' => (function () use ($indent, $key, $depth, $node) {
                     $nested = iter($node['children'], $depth + 1);
                     return "{$indent}  {$key}: {$nested}";
-                }) (),
+                })(),
                 'added' => "{$indent}+ {$key}: {$newValue}",
                 'deleted' => "{$indent}- {$key}: {$oldValue}",
                 'changed' => "{$indent}- {$key}: {$oldValue}\n{$indent}+ {$key}: $newValue",
@@ -65,7 +65,7 @@ function iter(array $comparisons, int $depth = 1): string
     return "{\n{$string}\n{$indentForClosedBrace}}";
 }
 
-function render($tree): string
+function render(array $tree): string
 {
     return iter($tree, 1);
 }
