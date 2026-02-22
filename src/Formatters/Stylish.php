@@ -56,6 +56,7 @@ function iter(array $comparisons, int $depth = 1): string
                 'deleted' => "{$indent}- {$key}: {$oldValue}",
                 'changed' => "{$indent}- {$key}: {$oldValue}\n{$indent}+ {$key}: $newValue",
                 'unchanged' => "{$indent}  {$key}: {$value}",
+                default => '',
             };
         },
         $comparisons
