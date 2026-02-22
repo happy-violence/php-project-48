@@ -30,9 +30,14 @@ function getFormat(string $path): string
 
 function getFileData(string $filePath): string
 {
-    return is_readable($filePath)
-        ? file_get_contents($filePath)
-        : throw new \Exception("'{$filePath}' is not readable");
+    if (!is_readable($filePath)) {
+        throw new \Exception("'{$filePath}' is not readable");
+    }
+    $content = file_get_contents($filePath);
+    if ($content === false) {
+        throw new \Exception("'{$filePath}' is not readable");
+    }
+    return $content;
 }
 
 function buildInnerTree(object $data1, object $data2): array
