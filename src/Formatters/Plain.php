@@ -29,7 +29,7 @@ function iter(array $comparisons, string $ancestry = ''): string
     $filteredComparisons = array_filter($comparisons, fn ($node) => $node['type'] !== 'unchanged');
     $result = array_map(
         function (mixed $node) use ($ancestry) {
-            $childrenKey = !empty($ancestry) ? "$ancestry.{$node['key']}" : $node['key'];
+            $childrenKey = $ancestry ? "$ancestry.{$node['key']}" : $node['key'];
             $newValue = stringify($node['newValue'] ?? null);
             $oldValue = stringify($node['oldValue'] ?? null);
 
@@ -49,5 +49,5 @@ function iter(array $comparisons, string $ancestry = ''): string
 
 function render(array $tree): string
 {
-    return iter($tree, '', 0);
+    return iter($tree);
 }
