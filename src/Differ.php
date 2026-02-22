@@ -25,10 +25,10 @@ function genDiff(string $path1, string $path2, string $outputFormat = 'stylish')
 function getFormat(string $path): string
 {
     $pathInfo = pathinfo($path);
-    return $pathInfo['extension'];
+    return $pathInfo['extension'] ?? '';
 }
 
-function getFileData(string $filePath): false|string
+function getFileData(string $filePath): string
 {
     return is_readable($filePath)
         ? file_get_contents($filePath)
